@@ -519,6 +519,8 @@ export default class Gantt {
             classes: 'label-container',
             append_to: this.$main_container,
         });
+        this.$sidebar.style.top = this.config.header_height + 'px';
+        this.$sidebar.style.height = this.grid_height - this.config.header_height + 'px';
     }
 
     make_grid_ticks() {

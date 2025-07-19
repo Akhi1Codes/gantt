@@ -2,16 +2,14 @@
 
 .main-container {
     position: relative;
+    z-index: 10;
 
     & .label-container {
         position: absolute;
-        top: calc(var(--gv-lower-header-height) + var(--gv-upper-header-height) + 10px);
         left: 0;
         bottom: 0;
-        z-index: 10;
         background-color: #080808;
         width: 200px;
-        height: 100%;
         min-width: 120px;
     }
 
