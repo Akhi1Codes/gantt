@@ -942,7 +942,7 @@ export default class Gantt {
             this.config.column_width;
 
         this.$container.scrollTo({
-            left: scroll_pos - this.config.column_width / 6,
+            left: scroll_pos - (this.$container.clientWidth / 2) + (this.config.column_width / 2),
             behavior: 'smooth',
         });
 
