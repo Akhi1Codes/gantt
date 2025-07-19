@@ -391,7 +391,7 @@ export default class Gantt {
         this.make_grid_rows();
         this.make_grid_header();
         this.make_side_header();
-        this.make_side_bar()
+        // this.make_side_bar()
     }
 
     make_grid_extras() {
@@ -427,7 +427,7 @@ export default class Gantt {
         });
         this.grid_height = grid_height;
         if (this.options.container_height === 'auto')
-            this.$container.style.height = grid_height + 'px';
+            this.$container.style.height =  '100%';
     }
 
     make_grid_rows() {
