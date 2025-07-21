@@ -1644,9 +1644,9 @@ export default class Gantt {
         this.$label_field.appendChild($label_header);
         // Header container
         const $labels_header = document.createElement('div');
-$labels_header.classList.add('gantt-labels-header');
-$labels_header.style.display = 'flex';
-$labels_header.style.flex = '0 0 auto';
+        $labels_header.classList.add('gantt-labels-header');
+        $labels_header.style.display = 'flex';
+        $labels_header.style.flex = '0 0 auto';
 
         // Add headers if available
         if (this.labelHeaders && this.labelHeaders.length > 0) {
@@ -1675,26 +1675,26 @@ $labels_header.style.flex = '0 0 auto';
             this.labelHeaders.forEach((header, colIdx) => {
                 const $col = document.createElement('div');
                 $col.classList.add('gantt-labels-col');
-            
+
                 const values = this.labelColumns[colIdx];
                 if (Array.isArray(values)) {
                     values.forEach(val => {
                         const $val = document.createElement('div');
                         $val.classList.add('gantt-labels-cell');
-                    
+
                         const $text = document.createElement('span');
                         $text.classList.add('gantt-labels-cell-text');
                         $text.textContent = val;
                         $text.title = val;
-                    
+
                         const height = this.options.bar_height + this.options.padding;
                         $val.style.height = height + 'px';
-                    
+
                         $val.appendChild($text);
                         $col.appendChild($val);
-                    });                    
+                    });
                 }
-            
+
                 $labels_content.appendChild($col);
             });
         }
