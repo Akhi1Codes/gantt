@@ -1654,6 +1654,7 @@ $labels_header.style.flex = '0 0 auto';
                 const $header = document.createElement('div');
                 $header.classList.add('gantt-labels-col');
                 $header.textContent = header;
+                $header.title = header;
                 $labels_header.appendChild($header);
             });
         }
@@ -1679,11 +1680,19 @@ $labels_header.style.flex = '0 0 auto';
                 if (Array.isArray(values)) {
                     values.forEach(val => {
                         const $val = document.createElement('div');
-                        $val.textContent = val;
+                        $val.classList.add('gantt-labels-cell');
+                    
+                        const $text = document.createElement('span');
+                        $text.classList.add('gantt-labels-cell-text');
+                        $text.textContent = val;
+                        $text.title = val;
+                    
                         const height = this.options.bar_height + this.options.padding;
                         $val.style.height = height + 'px';
+                    
+                        $val.appendChild($text);
                         $col.appendChild($val);
-                    });
+                    });                    
                 }
             
                 $labels_content.appendChild($col);
