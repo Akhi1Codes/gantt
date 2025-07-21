@@ -427,7 +427,7 @@ export default class Gantt {
         });
         this.grid_height = grid_height;
         if (this.options.container_height === 'auto')
-            this.$container.style.height =  '100%';
+            this.$container.style.height = '100%';
     }
 
     make_grid_rows() {
@@ -504,25 +504,25 @@ export default class Gantt {
         }
 
         // Create today button
-            if (this.options.today_button) {
-                let $today_button = document.createElement('button');
-                $today_button.classList.add('today-button');
-                $today_button.textContent = 'Today';
-                $today_button.onclick = this.scroll_current.bind(this);
-                this.$side_header.prepend($today_button);
-                this.$today_button = $today_button;
-            }
+        if (this.options.today_button) {
+            let $today_button = document.createElement('button');
+            $today_button.classList.add('today-button');
+            $today_button.textContent = 'Today';
+            $today_button.onclick = this.scroll_current.bind(this);
+            this.$side_header.prepend($today_button);
+            this.$today_button = $today_button;
+        }
 
-            if (this.options.label_button) {
-                let $label_button = document.createElement('button');
-                $label_button.classList.add('label-button');
-                $label_button.textContent = 'Label';
-                $label_button.onclick = this.toggle_label_field.bind(this);
-                this.$side_header.prepend($label_button);
-                this.$label_button = $label_button;
-                this.make_label();
-                this.$label_field.style.display = 'flex';
-            }
+        if (this.options.label_button) {
+            let $label_button = document.createElement('button');
+            $label_button.classList.add('label-button');
+            $label_button.textContent = 'Label';
+            $label_button.onclick = this.toggle_label_field.bind(this);
+            this.$side_header.prepend($label_button);
+            this.$label_button = $label_button;
+            this.make_label();
+            this.$label_field.style.display = 'flex';
+        }
     }
 
     make_side_bar() {
@@ -1597,31 +1597,28 @@ export default class Gantt {
 
         const $label_header = document.createElement('div');
         $label_header.classList.add('gantt-label-header');
+
         const $settings_icon = document.createElement('span');
         $settings_icon.classList.add('gantt-label-settings');
-        $settings_icon.innerHTML = `
-        <svg 
-          width="18" 
-          height="18" 
-          viewBox="0 0 24 24" 
-          fill="none" 
-          stroke="currentColor" 
-          stroke-width="2" 
-          stroke-linecap="round" 
-          stroke-linejoin="round" 
-          style="display: block; vertical-align: middle;">
-          <circle cx="12" cy="12" r="3"></circle>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 
-                   1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 
-                   1.65 0 0 0 5 15.4a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 5 8.6a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 
-                   1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 8 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09A1.65 1.65 0 0 0 16 4.6a1.65 1.65 
-                   0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 8c.14.31.22.65.22 1v.09A1.65 1.65 0 0 0 21 12c0 
-                   .35-.08.69-.22 1z"></path>
-        </svg>
-      `;
         $settings_icon.title = 'Settings';
+        $settings_icon.innerHTML = `
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+     xmlns="http://www.w3.org/2000/svg" stroke="currentColor">
+  <line x1="4" y1="21" x2="4" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  <line x1="4" y1="10" x2="4" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  <line x1="12" y1="21" x2="12" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  <line x1="12" y1="8" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  <line x1="20" y1="21" x2="20" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  <line x1="20" y1="12" x2="20" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="4" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="2"/>
+  <circle cx="12" cy="8" r="2" fill="none" stroke="currentColor" stroke-width="2"/>
+  <circle cx="20" cy="16" r="2" fill="none" stroke="currentColor" stroke-width="2"/>
+</svg>
+`;
+
         $label_header.appendChild($settings_icon);
         this.$label_field.appendChild($label_header);
+
 
         this.$main_container.prepend(this.$label_field);
     }
