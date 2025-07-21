@@ -14,6 +14,7 @@ export default class Gantt {
         this.setup_wrapper(wrapper);
         this.setup_options(options);
         this.setup_tasks(tasks);
+        this.setup_labels(options.labels)
         this.change_view_mode();
         this.bind_events();
     }
@@ -1588,6 +1589,29 @@ export default class Gantt {
         this.$label_field?.remove?.();
     }
 
+    setup_labels(labels) {
+        // Ensure labels is an array of objects
+        this.labels = Array.isArray(labels) ? labels : [];
+
+        this.labelHeaders = [];
+        this.labelColumns = [];
+
+        const labelMap = new Map();
+
+        this.labels.forEach(labelObj => {
+            Object.entries(labelObj).forEach(([header, values]) => {
+                if (!labelMap.has(header)) {
+                    labelMap.set(header, Array.isArray(values) ? values : []);
+                }
+            });
+        });
+
+        // Populate headers and values
+        this.labelHeaders = Array.from(labelMap.keys());
+        this.labelColumns = Array.from(labelMap.values());
+    }
+
+
     make_label() {
         if (this.$label_field) {
             this.$label_field.remove();
@@ -1596,13 +1620,13 @@ export default class Gantt {
         this.$label_field.classList.add('gantt-label-field');
 
         const $label_header = document.createElement('div');
-        $label_header.classList.add('gantt-label-header');
+        $label_header.classList.add('gantt-label-upperheader');
 
         const $settings_icon = document.createElement('span');
         $settings_icon.classList.add('gantt-label-settings');
         $settings_icon.title = 'Settings';
         $settings_icon.innerHTML = `
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none"
      xmlns="http://www.w3.org/2000/svg" stroke="currentColor">
   <line x1="4" y1="21" x2="4" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
   <line x1="4" y1="10" x2="4" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -1618,9 +1642,79 @@ export default class Gantt {
 
         $label_header.appendChild($settings_icon);
         this.$label_field.appendChild($label_header);
+        // Header container
+        const $labels_header = document.createElement('div');
+$labels_header.classList.add('gantt-labels-header');
+$labels_header.style.display = 'flex';
+$labels_header.style.flex = '0 0 auto';
 
+        // Add headers if available
+        if (this.labelHeaders && this.labelHeaders.length > 0) {
+            this.labelHeaders.forEach((header, colIdx) => {
+                const $header = document.createElement('div');
+                $header.classList.add('gantt-labels-col');
+                $header.textContent = header;
+                $labels_header.appendChild($header);
+            });
+        }
 
+        // Scrollable container for values
+        const $labels_scroll = document.createElement('div');
+        $labels_scroll.classList.add('gantt-labels-scroll');
+        $labels_scroll.style.flex = '1 1 auto';
+        $labels_scroll.style.overflowY = 'auto';
+        $labels_scroll.style.height = '100%';
+
+        const $labels_content = document.createElement('div');
+        $labels_content.classList.add('gantt-labels-content');
+        $labels_content.style.display = 'flex';
+
+        // Add value columns if headers/columns are available
+        if (this.labelHeaders && this.labelHeaders.length > 0) {
+            this.labelHeaders.forEach((header, colIdx) => {
+                const $col = document.createElement('div');
+                $col.classList.add('gantt-labels-col');
+            
+                const values = this.labelColumns[colIdx];
+                if (Array.isArray(values)) {
+                    values.forEach(val => {
+                        const $val = document.createElement('div');
+                        $val.textContent = val;
+                        const height = this.options.bar_height + this.options.padding;
+                        $val.style.height = height + 'px';
+                        $col.appendChild($val);
+                    });
+                }
+            
+                $labels_content.appendChild($col);
+            });
+        }
+
+        $labels_scroll.appendChild($labels_content);
+        this.$label_field.appendChild($labels_header);
+        this.$label_field.appendChild($labels_scroll);
+
+        // Prepend to main container
         this.$main_container.prepend(this.$label_field);
+
+        // Sync scroll between labels and gantt container
+        if ($labels_scroll && this.$container) {
+            let isSyncingScroll = false;
+
+            $labels_scroll.addEventListener('scroll', () => {
+                if (isSyncingScroll) return;
+                isSyncingScroll = true;
+                this.$container.scrollTop = $labels_scroll.scrollTop;
+                isSyncingScroll = false;
+            });
+
+            this.$container.addEventListener('scroll', () => {
+                if (isSyncingScroll) return;
+                isSyncingScroll = true;
+                $labels_scroll.scrollTop = this.$container.scrollTop;
+                isSyncingScroll = false;
+            });
+        }
     }
 
     toggle_label_field() {
