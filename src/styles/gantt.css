@@ -10,14 +10,35 @@
         position: static;
         width: 30%;
         height: 100%;
-        background: rgba(255,255,255,1);
+        background: rgba(255, 255, 255, 1);
         border-right: 1px solid #ddd;
         overflow-y: auto;
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
         pointer-events: auto;
-        box-shadow: 2px 0 8px rgba(0,0,0,0.04);
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.04);
+
+        & .gantt-label-header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            background: var(--g-header-background, #f8f9fa);
+            border-bottom: 1px solid #ddd;
+            padding: 0 10px;
+            height:  var(--gv-upper-header-height);
+
+
+            & .gantt-label-settings {
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: var(--g-text-dark, #333);
+                font-size: 18px;
+                margin-left: auto;
+            }
+        }
     }
 
     & .gantt-container {

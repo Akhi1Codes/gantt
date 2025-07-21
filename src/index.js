@@ -87,7 +87,7 @@ export default class Gantt {
         for (let name in CSS_VARIABLES) {
             let setting = this.options[CSS_VARIABLES[name]];
             if (setting !== 'auto')
-                this.$container.style.setProperty(
+                this.$main_container.style.setProperty(
                     '--gv-' + name,
                     setting + 'px',
                 );
@@ -520,6 +520,8 @@ export default class Gantt {
                 $label_button.onclick = this.toggle_label_field.bind(this);
                 this.$side_header.prepend($label_button);
                 this.$label_button = $label_button;
+                this.make_label();
+                this.$label_field.style.display = 'flex';
             }
     }
 
@@ -1583,17 +1585,44 @@ export default class Gantt {
         this.$current_highlight?.remove?.();
         this.$extras?.remove?.();
         this.popup?.hide?.();
+        this.$label_field?.remove?.();
     }
 
     make_label() {
-        // Remove existing label if present
         if (this.$label_field) {
             this.$label_field.remove();
         }
-        // Create the label field container
         this.$label_field = document.createElement('div');
         this.$label_field.classList.add('gantt-label-field');
-        this.$label_field.style.display = 'none'; // Hidden by default
+
+        const $label_header = document.createElement('div');
+        $label_header.classList.add('gantt-label-header');
+        const $settings_icon = document.createElement('span');
+        $settings_icon.classList.add('gantt-label-settings');
+        $settings_icon.innerHTML = `
+        <svg 
+          width="18" 
+          height="18" 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          stroke-width="2" 
+          stroke-linecap="round" 
+          stroke-linejoin="round" 
+          style="display: block; vertical-align: middle;">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 
+                   1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 
+                   1.65 0 0 0 5 15.4a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 5 8.6a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 
+                   1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 8 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09A1.65 1.65 0 0 0 16 4.6a1.65 1.65 
+                   0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 8c.14.31.22.65.22 1v.09A1.65 1.65 0 0 0 21 12c0 
+                   .35-.08.69-.22 1z"></path>
+        </svg>
+      `;
+        $settings_icon.title = 'Settings';
+        $label_header.appendChild($settings_icon);
+        this.$label_field.appendChild($label_header);
+
         this.$main_container.prepend(this.$label_field);
     }
 
