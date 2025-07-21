@@ -4,14 +4,20 @@
     position: relative;
     z-index: 10;
     height: 100%;
+    display: flex;
 
-    & .label-container {
-        position: absolute;
-        left: 0;
-        bottom: 0;
-        background-color: #080808;
-        width: 200px;
-        min-width: 120px;
+    & .gantt-label-field {
+        position: static;
+        width: 30%;
+        height: 100%;
+        background: rgba(255,255,255,1);
+        border-right: 1px solid #ddd;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        pointer-events: auto;
+        box-shadow: 2px 0 8px rgba(0,0,0,0.04);
     }
 
     & .gantt-container {
@@ -153,13 +159,13 @@
             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
             transition-duration: 150ms;
             background-color: var(--g-actions-background);
-            border-radius: 0.5rem;
+            border-radius: 0.2rem;
             border: none;
-            padding: 5px 8px;
+            padding: 5px 15px;
             color: var(--g-text-dark);
             font-size: 14px;
             letter-spacing: 0.02em;
-            font-weight: 420;
+            font-weight: 600;
             box-sizing: content-box;
 
             margin-right: 5px;

@@ -504,14 +504,23 @@ export default class Gantt {
         }
 
         // Create today button
-        if (this.options.today_button) {
-            let $today_button = document.createElement('button');
-            $today_button.classList.add('today-button');
-            $today_button.textContent = 'Today';
-            $today_button.onclick = this.scroll_current.bind(this);
-            this.$side_header.prepend($today_button);
-            this.$today_button = $today_button;
-        }
+            if (this.options.today_button) {
+                let $today_button = document.createElement('button');
+                $today_button.classList.add('today-button');
+                $today_button.textContent = 'Today';
+                $today_button.onclick = this.scroll_current.bind(this);
+                this.$side_header.prepend($today_button);
+                this.$today_button = $today_button;
+            }
+
+            if (this.options.label_button) {
+                let $label_button = document.createElement('button');
+                $label_button.classList.add('label-button');
+                $label_button.textContent = 'Label';
+                $label_button.onclick = this.toggle_label_field.bind(this);
+                this.$side_header.prepend($label_button);
+                this.$label_button = $label_button;
+            }
     }
 
     make_side_bar() {
@@ -1574,6 +1583,29 @@ export default class Gantt {
         this.$current_highlight?.remove?.();
         this.$extras?.remove?.();
         this.popup?.hide?.();
+    }
+
+    make_label() {
+        // Remove existing label if present
+        if (this.$label_field) {
+            this.$label_field.remove();
+        }
+        // Create the label field container
+        this.$label_field = document.createElement('div');
+        this.$label_field.classList.add('gantt-label-field');
+        this.$label_field.style.display = 'none'; // Hidden by default
+        this.$main_container.prepend(this.$label_field);
+    }
+
+    toggle_label_field() {
+        if (!this.$label_field) {
+            this.make_label();
+        }
+        if (this.$label_field.style.display === 'none') {
+            this.$label_field.style.display = 'flex';
+        } else {
+            this.$label_field.style.display = 'none';
+        }
     }
 }
 
