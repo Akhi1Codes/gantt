@@ -1,4 +1,4 @@
-# Clone of Frappe Gantt that adds additional functionality
+### Clone of Frappe Gantt with additional functionality
 
 <div align="center" markdown="1">
     <img src=".github/gantt-logo.jpg" width="80">
