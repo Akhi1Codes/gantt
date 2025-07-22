@@ -1,3 +1,5 @@
+# Clone of Frappe Gantt that adds additional functionality
+
 <div align="center" markdown="1">
     <img src=".github/gantt-logo.jpg" width="80">
     <h1>Frappe Gantt</h1>
