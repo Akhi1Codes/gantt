@@ -32,19 +32,11 @@ export default class Label {
         this.$label_field = document.createElement('div');
         this.$label_field.classList.add('gantt-label-field');
 
-        // Create upper header with settings icon
         this.create_upper_header();
-        
-        // Create label headers row
         this.create_headers_row();
-        
-        // Create scrollable values area
         this.create_values_area();
-
-        // Setup scroll synchronization
         this.setup_scroll_sync();
 
-        // Prepend to main container
         this.gantt.$main_container.prepend(this.$label_field);
     }
 
@@ -69,7 +61,6 @@ export default class Label {
   <circle cx="20" cy="16" r="2" fill="none" stroke="currentColor" stroke-width="2"/>
 </svg>
 `;
-
         $label_header.appendChild($settings_icon);
         this.$label_field.appendChild($label_header);
     }
