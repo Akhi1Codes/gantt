@@ -1171,10 +1171,29 @@ export default class Gantt {
 
         if (this.options.infinite_padding) {
             let extended = false;
-            $.on(this.$container, 'mousewheel', (e) => {
-                let trigger = this.$container.scrollWidth / 2;
-                if (!extended && e.currentTarget.scrollLeft <= trigger) {
-                    let old_scroll_left = e.currentTarget.scrollLeft;
+            let lastScrollTime = 0;
+            
+            $.on(this.$container, 'wheel', (e) => {
+                // Skip infinite padding if we're syncing label scroll
+                if (this._isSyncingLabelScroll) return;
+                
+                const now = Date.now();
+                if (now - lastScrollTime < 100) return;
+                lastScrollTime = now;
+                
+                const container = e.currentTarget;
+                const atTop = container.scrollTop <= 5;
+                const atBottom = container.scrollTop + container.clientHeight >= container.scrollHeight - 5;
+                
+                const scrollingUp = e.deltaY < 0;
+                const scrollingDown = e.deltaY > 0;
+                
+                if (!extended && atTop && scrollingUp) {
+                    let old_scroll_top = container.scrollTop;
+                    let old_grid_height = this.grid_height;
+                    let old_label_scroll = this.label && this.label.$labels_scroll ? this.label.$labels_scroll.scrollTop : 0;
+                    let [min_start, max_start, max_end] = this.get_start_end_positions();
+                    let relative_bar_position = min_start;
                     extended = true;
 
                     this.gantt_start = date_utils.add(
@@ -1184,21 +1203,31 @@ export default class Gantt {
                     );
                     this.setup_date_values();
                     this.render();
-                    e.currentTarget.scrollLeft =
-                        old_scroll_left +
-                        this.config.column_width * this.config.extend_by_units;
+                    
+                    let [new_min_start, new_max_start, new_max_end] = this.get_start_end_positions();
+                    let bar_position_change = new_min_start - relative_bar_position;
+                    
+                    let new_grid_height = this.grid_height;
+                    let height_difference = new_grid_height - old_grid_height;
+                    container.scrollTop = old_scroll_top + height_difference;
+                    
+                    if (this.label && this.label.$labels_scroll) {
+                        this.label.$labels_scroll.scrollTop = old_label_scroll + height_difference;
+                    }
+                    
+                    if (Math.abs(bar_position_change) > 0) {
+                        container.scrollLeft += bar_position_change;
+                    }
                     setTimeout(() => (extended = false), 300);
                 }
 
-                if (
-                    !extended &&
-                    e.currentTarget.scrollWidth -
-                    (e.currentTarget.scrollLeft +
-                        e.currentTarget.clientWidth) <=
-                    trigger
-                ) {
-                    let old_scroll_left = e.currentTarget.scrollLeft;
+                if (!extended && atBottom && scrollingDown) {
+                    let old_scroll_top = container.scrollTop;
+                    let old_label_scroll = this.label && this.label.$labels_scroll ? this.label.$labels_scroll.scrollTop : 0;
+                    let [min_start, max_start, max_end] = this.get_start_end_positions();
+                    let relative_bar_position = min_start;
                     extended = true;
+                    
                     this.gantt_end = date_utils.add(
                         this.gantt_end,
                         this.config.extend_by_units,
@@ -1206,7 +1235,19 @@ export default class Gantt {
                     );
                     this.setup_date_values();
                     this.render();
-                    e.currentTarget.scrollLeft = old_scroll_left;
+
+                    let [new_min_start, new_max_start, new_max_end] = this.get_start_end_positions();
+                    let bar_position_change = new_min_start - relative_bar_position;
+                    
+                    container.scrollTop = old_scroll_top;
+                    
+                    if (this.label && this.label.$labels_scroll) {
+                        this.label.$labels_scroll.scrollTop = old_label_scroll;
+                    }
+
+                    if (Math.abs(bar_position_change) > 0) {
+                        container.scrollLeft += bar_position_change;
+                    }
                     setTimeout(() => (extended = false), 300);
                 }
             });

@@ -138,14 +138,18 @@ export default class Label {
             this.$labels_scroll.addEventListener('scroll', () => {
                 if (isSyncingScroll) return;
                 isSyncingScroll = true;
+                this.gantt._isSyncingLabelScroll = true;
                 this.gantt.$container.scrollTop = this.$labels_scroll.scrollTop;
+                this.gantt._isSyncingLabelScroll = false;
                 isSyncingScroll = false;
             });
 
             this.gantt.$container.addEventListener('scroll', () => {
                 if (isSyncingScroll) return;
                 isSyncingScroll = true;
+                this.gantt._isSyncingLabelScroll = true;
                 this.$labels_scroll.scrollTop = this.gantt.$container.scrollTop;
+                this.gantt._isSyncingLabelScroll = false;
                 isSyncingScroll = false;
             });
         }
