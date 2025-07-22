@@ -356,6 +356,13 @@ export default class Gantt {
     }
 
     render() {
+        // Save label state before clearing if preserving state
+        let savedLabelState = null;
+        if (this.label && this._preserveLabelState) {
+            console.log('Preserving label state during render');
+            savedLabelState = this.label.save_state();
+        }
+        
         this.clear();
         this.setup_layers();
         this.make_grid();
@@ -366,6 +373,14 @@ export default class Gantt {
         this.map_arrows_on_bars();
         this.set_dimensions();
         this.set_scroll_position(this.options.scroll_to);
+        
+        // Restore label state after rendering if it was saved
+        if (savedLabelState && this._preserveLabelState) {
+            if (this.label) {
+                this.label.restore_state(savedLabelState);
+            }
+            this._preserveLabelState = false;
+        }
     }
 
     setup_layers() {
@@ -524,7 +539,7 @@ export default class Gantt {
             $label_button.onclick = this.toggle_label_field.bind(this);
             this.$side_header.prepend($label_button);
             this.$label_button = $label_button;
-            if (this.label) {
+            if (this.label && !this._preserveLabelState) {
                 this.label.show();
             }
         }
@@ -1202,6 +1217,10 @@ export default class Gantt {
                         this.config.unit,
                     );
                     this.setup_date_values();
+                    
+                    // Preserve label state during infinite padding re-render
+                    console.log('Setting _preserveLabelState = true for upward scroll');
+                    this._preserveLabelState = true;
                     this.render();
                     
                     let [new_min_start, new_max_start, new_max_end] = this.get_start_end_positions();
@@ -1234,6 +1253,10 @@ export default class Gantt {
                         this.config.unit,
                     );
                     this.setup_date_values();
+                    
+                    // Preserve label state during infinite padding re-render
+                    console.log('Setting _preserveLabelState = true for downward scroll');
+                    this._preserveLabelState = true;
                     this.render();
 
                     let [new_min_start, new_max_start, new_max_end] = this.get_start_end_positions();
@@ -1631,7 +1654,11 @@ export default class Gantt {
         this.$current_highlight?.remove?.();
         this.$extras?.remove?.();
         this.popup?.hide?.();
-        this.label?.remove?.();
+        
+        // Don't remove label during infinite padding re-renders to preserve state
+        if (!this._preserveLabelState) {
+            this.label?.remove?.();
+        }
     }
 
     setup_labels(labels) {

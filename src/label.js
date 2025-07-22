@@ -3,6 +3,7 @@ export default class Label {
         this.gantt = gantt;
         this.labels = Array.isArray(labels) ? labels : [];
         this.setup_labels();
+        this.isVisible = false;
     }
 
     setup_labels() {
@@ -129,11 +130,13 @@ export default class Label {
     }
 
     toggle_header_visibility(header, isVisible) {
+        console.log(`Toggling header '${header}' to ${isVisible ? 'visible' : 'hidden'}`);
         if (isVisible) {
             this.visibleHeaders.add(header);
         } else {
             this.visibleHeaders.delete(header);
         }
+        console.log('Current visibleHeaders:', Array.from(this.visibleHeaders));
         this.refresh_label_display();
     }
 
@@ -244,14 +247,63 @@ export default class Label {
         }
     }
 
+    save_state() {
+        // Save the current state for restoration after re-render
+        console.log('Saving label state:', {
+            isVisible: this.isVisible,
+            visibleHeaders: this.visibleHeaders ? Array.from(this.visibleHeaders) : null,
+            labels: this.labels
+        });
+        return {
+            isVisible: this.isVisible,
+            visibleHeaders: this.visibleHeaders ? new Set(this.visibleHeaders) : null,
+            labels: this.labels
+        };
+    }
+
+    restore_state(state) {
+        // Restore the saved state after re-render
+        console.log('Restoring label state:', {
+            state: state,
+            currentLabelField: !!this.$label_field,
+            labelFieldAttached: this.$label_field ? !!this.$label_field.parentNode : false
+        });
+        
+        if (state) {
+            this.labels = state.labels || [];
+            this.setup_labels();
+            
+            if (state.visibleHeaders) {
+                this.visibleHeaders = new Set(state.visibleHeaders);
+                console.log('Restored visibleHeaders:', Array.from(this.visibleHeaders));
+            }
+            
+            if (state.isVisible) {
+                // If the label field was removed during re-render, recreate it
+                if (!this.$label_field || !this.$label_field.parentNode) {
+                    console.log('Label field was removed, recreating...');
+                    this.create_label_field();
+                } else {
+                    console.log('Label field exists, refreshing display...');
+                    // Just refresh the display with the preserved visible headers
+                    this.refresh_label_display();
+                }
+                this.isVisible = true;
+                if (this.$label_field) {
+                    this.$label_field.style.display = 'flex';
+                }
+            }
+        }
+    }
+
     toggle() {
         if (!this.$label_field) {
             this.create_label_field();
         }
-        if (this.$label_field.style.display === 'none') {
-            this.$label_field.style.display = 'flex';
+        if (this.$label_field.style.display === 'none' || !this.isVisible) {
+            this.show();
         } else {
-            this.$label_field.style.display = 'none';
+            this.hide();
         }
     }
 
@@ -260,12 +312,14 @@ export default class Label {
             this.create_label_field();
         }
         this.$label_field.style.display = 'flex';
+        this.isVisible = true;
     }
 
     hide() {
         if (this.$label_field) {
             this.$label_field.style.display = 'none';
         }
+        this.isVisible = false;
     }
 
     remove() {
@@ -273,6 +327,7 @@ export default class Label {
             this.$label_field.remove();
             this.$label_field = null;
         }
+        // Note: Don't reset isVisible here as it should be preserved for state restoration
     }
 
     update_labels(labels) {
