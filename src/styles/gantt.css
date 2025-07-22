@@ -26,7 +26,7 @@
             border-bottom: 1px solid #ddd;
             padding: 0 10px;
             min-height: var(--gv-upper-header-height);
-
+            position: relative;
 
             & .gantt-label-settings {
                 cursor: pointer;
@@ -36,6 +36,66 @@
                 color: var(--g-text-dark, #333);
                 font-size: 12px;
                 margin-left: auto;
+                position: relative;
+
+                & .gantt-label-settings-dropdown {
+                    position: absolute;
+                    top: 100%;
+                    left: 0;
+                    background: #fff;
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                    z-index: 9999;
+                    min-width: 200px;
+                    max-height: 300px;
+                    overflow-y: auto;
+                    margin-top: 2px;
+                }
+                
+                &.dropdown-above .gantt-label-settings-dropdown {
+                    top: auto;
+                    bottom: 100%;
+                    margin-top: 0;
+                    margin-bottom: 2px;
+                }
+            }
+        }
+
+        & .gantt-label-settings-dropdown {
+            & .dropdown-header {
+                padding: 8px 12px;
+                background: #f8f9fa;
+                border-bottom: 1px solid #e0e0e0;
+                font-weight: bold;
+                font-size: 1em;
+                color: #333;
+            }
+
+            & .checkbox-item {
+                display: flex;
+                align-items: center;
+                padding: 8px 12px;
+                border-bottom: 1px solid #f0f0f0;
+                cursor: pointer;
+                transition: background-color 0.15s;
+
+                &:hover {
+                    background-color: #f5f7fa;
+                }
+
+                & input[type="checkbox"] {
+                    margin-right: 8px;
+                    cursor: pointer;
+                }
+
+                & label {
+                    cursor: pointer;
+                    font-size: 1.1em;
+                    font-weight: 600;
+                    color: #444;
+                    flex: 1;
+                }
             }
         }
 

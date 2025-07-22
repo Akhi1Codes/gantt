@@ -61,8 +61,94 @@ export default class Label {
   <circle cx="20" cy="16" r="2" fill="none" stroke="currentColor" stroke-width="2"/>
 </svg>
 `;
+        this.create_settings_dropdown($settings_icon);
+        $settings_icon.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.toggle_settings_dropdown();
+        });
+
         $label_header.appendChild($settings_icon);
         this.$label_field.appendChild($label_header);
+        document.addEventListener('click', (e) => {
+            if (this.$settings_dropdown && !$settings_icon.contains(e.target)) {
+                this.hide_settings_dropdown();
+            }
+        });
+    }
+
+    create_settings_dropdown($parent) {
+        this.$settings_dropdown = document.createElement('div');
+        this.$settings_dropdown.classList.add('gantt-label-settings-dropdown');
+        this.$settings_dropdown.style.display = 'none';
+        this.visibleHeaders = new Set(this.labelHeaders);
+        
+        const $dropdown_header = document.createElement('div');
+        $dropdown_header.classList.add('dropdown-header');
+        $dropdown_header.textContent = 'Show/Hide Columns';
+        this.$settings_dropdown.appendChild($dropdown_header);
+        
+        this.labelHeaders.forEach((header, index) => {
+            const $checkbox_item = document.createElement('div');
+            $checkbox_item.classList.add('checkbox-item');
+            
+            const $checkbox = document.createElement('input');
+            $checkbox.type = 'checkbox';
+            $checkbox.id = `header-${index}`;
+            $checkbox.checked = true;
+            $checkbox.addEventListener('change', () => {
+                this.toggle_header_visibility(header, $checkbox.checked);
+            });
+            
+            const $label = document.createElement('label');
+            $label.htmlFor = `header-${index}`;
+            $label.textContent = header;
+            
+            $checkbox_item.appendChild($checkbox);
+            $checkbox_item.appendChild($label);
+            this.$settings_dropdown.appendChild($checkbox_item);
+        });
+        
+        $parent.appendChild(this.$settings_dropdown);
+    }
+
+    toggle_settings_dropdown() {
+        if (this.$settings_dropdown.style.display === 'none') {
+            this.show_settings_dropdown();
+        } else {
+            this.hide_settings_dropdown();
+        }
+    }
+
+    show_settings_dropdown() {
+        this.$settings_dropdown.style.display = 'block';
+    }
+
+    hide_settings_dropdown() {
+        this.$settings_dropdown.style.display = 'none';
+        this.$settings_dropdown.parentElement.classList.remove('dropdown-above');
+    }
+
+    toggle_header_visibility(header, isVisible) {
+        if (isVisible) {
+            this.visibleHeaders.add(header);
+        } else {
+            this.visibleHeaders.delete(header);
+        }
+        this.refresh_label_display();
+    }
+
+    refresh_label_display() {
+        // Remove existing headers and content
+        const $existing_header = this.$label_field.querySelector('.gantt-labels-header');
+        const $existing_scroll = this.$label_field.querySelector('.gantt-labels-scroll');
+        
+        if ($existing_header) $existing_header.remove();
+        if ($existing_scroll) $existing_scroll.remove();
+        
+        // Recreate with only visible headers
+        this.create_headers_row();
+        this.create_values_area();
+        this.setup_scroll_sync();
     }
 
     create_headers_row() {
@@ -71,14 +157,16 @@ export default class Label {
         $labels_header.style.display = 'flex';
         $labels_header.style.flex = '0 0 auto';
 
-        // Add headers if available
+        // Add only visible headers
         if (this.labelHeaders && this.labelHeaders.length > 0) {
             this.labelHeaders.forEach((header) => {
-                const $header = document.createElement('div');
-                $header.classList.add('gantt-labels-col');
-                $header.textContent = header;
-                $header.title = header;
-                $labels_header.appendChild($header);
+                if (this.visibleHeaders && this.visibleHeaders.has(header)) {
+                    const $header = document.createElement('div');
+                    $header.classList.add('gantt-labels-col');
+                    $header.textContent = header;
+                    $header.title = header;
+                    $labels_header.appendChild($header);
+                }
             });
         }
 
@@ -97,32 +185,33 @@ export default class Label {
         $labels_content.classList.add('gantt-labels-content');
         $labels_content.style.display = 'flex';
 
-        // Add value columns if headers/columns are available
         if (this.labelHeaders && this.labelHeaders.length > 0) {
             this.labelHeaders.forEach((header, colIdx) => {
-                const $col = document.createElement('div');
-                $col.classList.add('gantt-labels-col');
+                if (this.visibleHeaders && this.visibleHeaders.has(header)) {
+                    const $col = document.createElement('div');
+                    $col.classList.add('gantt-labels-col');
 
-                const values = this.labelColumns[colIdx];
-                if (Array.isArray(values)) {
-                    values.forEach(val => {
-                        const $val = document.createElement('div');
-                        $val.classList.add('gantt-labels-cell');
+                    const values = this.labelColumns[colIdx];
+                    if (Array.isArray(values)) {
+                        values.forEach(val => {
+                            const $val = document.createElement('div');
+                            $val.classList.add('gantt-labels-cell');
 
-                        const $text = document.createElement('span');
-                        $text.classList.add('gantt-labels-cell-text');
-                        $text.textContent = val;
-                        $text.title = val;
+                            const $text = document.createElement('span');
+                            $text.classList.add('gantt-labels-cell-text');
+                            $text.textContent = val;
+                            $text.title = val;
 
-                        const height = this.gantt.options.bar_height + this.gantt.options.padding;
-                        $val.style.height = height + 'px';
+                            const height = this.gantt.options.bar_height + this.gantt.options.padding;
+                            $val.style.height = height + 'px';
 
-                        $val.appendChild($text);
-                        $col.appendChild($val);
-                    });
+                            $val.appendChild($text);
+                            $col.appendChild($val);
+                        });
+                    }
+
+                    $labels_content.appendChild($col);
                 }
-
-                $labels_content.appendChild($col);
             });
         }
 
