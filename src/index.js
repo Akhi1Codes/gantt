@@ -15,9 +15,7 @@ export default class Gantt {
         this.setup_wrapper(wrapper);
         this.setup_options(options);
         this.setup_tasks(tasks);
-        if (options.labels) {
-            this.label = new Label(this, options.labels);
-        }
+        this.setup_labels(options.labels);
         this.change_view_mode();
         this.bind_events();
     }
