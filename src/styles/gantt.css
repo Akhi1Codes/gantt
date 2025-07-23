@@ -571,6 +571,19 @@
     }
 }
 
+.gantt .bar-original-line {
+    stroke: #e67e22;
+    stroke-width: 2px;
+    stroke-dasharray: 4, 4;
+    opacity: 0.8;
+}
+
+.gantt .bar-original-triangle {
+    fill: #e67e22;
+    opacity: 0.85;
+    stroke: none;
+}
+
 /* Scrollbar */
 .gantt-container {
     scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);

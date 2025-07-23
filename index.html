@@ -66,6 +66,7 @@
         const daysSince = (dx) => new Date(today + dx * 86400000);
         let tasks = [
             {
+                original: daysSince(-16),
                 start: daysSince(-15),
                 end: daysSince(-12),
                 name: 'Project kickoff & stakeholder meeting',
@@ -73,6 +74,7 @@
                 progress: random(90, 100),
             },
             {
+                original: daysSince(-12),
                 start: daysSince(-11),
                 end: daysSince(-7),
                 name: 'Requirements gathering & site audit',
@@ -81,6 +83,7 @@
                 dependencies: 'Task 0',
             },
             {
+                original: daysSince(-10),
                 start: daysSince(-6),
                 duration: '3d',
                 name: 'Market & competitor analysis',
@@ -89,6 +92,7 @@
                 dependencies: 'Task 1',
             },
             {
+                original: daysSince(-5),
                 start: daysSince(-3),
                 duration: '4d',
                 name: 'Create wireframes',

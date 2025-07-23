@@ -96,6 +96,9 @@ export default class Bar {
             this.prepare_expected_progress_values();
             this.draw_expected_progress_bar();
         }
+        if (this.task.original) {
+            this.draw_original_line();
+        }
         this.draw_label();
         this.draw_resize_handles();
 
@@ -437,6 +440,22 @@ export default class Bar {
             this.update_attr(bar, 'width', width);
             this.$date_highlight.style.width = width + 'px';
         }
+        if (this.task.original && this.$original_line && this.$original_triangle_left && this.$original_triangle_right) {
+            const { column_width, step, unit } = this.gantt.config;
+            const gantt_start = this.gantt.gantt_start;
+            const y = this.y + this.height + 6;
+            const triangle_size = 8;
+            const triangle_height = 6;
+            const original_start = new Date(this.task.original);
+            const x1 = (date_utils.diff(original_start, gantt_start, unit) / step) * column_width;
+            const x2 = this.x + (width !== null ? width : this.width);
+            this.$original_line.setAttribute('x1', x1);
+            this.$original_line.setAttribute('x2', x2);
+            this.$original_line.setAttribute('y1', y);
+            this.$original_line.setAttribute('y2', y);
+            this.$original_triangle_left.setAttribute('points', `${x1},${y} ${x1},${y - triangle_height / 2} ${x1 + triangle_size},${y}`);
+            this.$original_triangle_right.setAttribute('points', `${x2},${y} ${x2},${y - triangle_height / 2} ${x2 - triangle_size},${y}`);
+        }
 
         this.update_label_position();
         this.update_handle_position();
@@ -733,5 +752,34 @@ export default class Bar {
         for (let arrow of this.arrows) {
             arrow.update();
         }
+    }
+
+    draw_original_line() {
+        const { column_width, step, unit } = this.gantt.config;
+        const gantt_start = this.gantt.gantt_start;
+        const y = this.y + this.height + 6;
+        const triangle_size = 6;
+        const triangle_height = 6;
+        const original_start = new Date(this.task.original);
+        const x1 = (date_utils.diff(original_start, gantt_start, unit) / step) * column_width;
+        const x2 = (date_utils.diff(this.task._end, gantt_start, unit) / step) * column_width;
+        this.$original_line = createSVG('line', {
+            x1,
+            y1: y,
+            x2,
+            y2: y,
+            class: 'bar-original-line',
+            append_to: this.bar_group,
+        });
+        this.$original_triangle_left = createSVG('polygon', {
+            points: `${x1},${y} ${x1},${y - triangle_height / 2} ${x1 + triangle_size},${y}`,
+            class: 'bar-original-triangle',
+            append_to: this.bar_group,
+        });
+        this.$original_triangle_right = createSVG('polygon', {
+            points: `${x2},${y} ${x2},${y - triangle_height / 2} ${x2 - triangle_size},${y}`,
+            class: 'bar-original-triangle',
+            append_to: this.bar_group,
+        });
     }
 }
