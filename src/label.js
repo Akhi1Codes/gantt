@@ -48,7 +48,7 @@ export default class Label {
 
         const $settings_icon = document.createElement('span');
         $settings_icon.classList.add('gantt-label-settings');
-        $settings_icon.title = 'Settings';
+        $settings_icon.title = 'Only 3 columns can be selected at a time';
         $settings_icon.innerHTML = `
 <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
      xmlns="http://www.w3.org/2000/svg" stroke="currentColor">
@@ -325,7 +325,7 @@ export default class Label {
             e.preventDefault();
             
             const deltaX = e.clientX - startX;
-            const newWidth = Math.max(250, Math.min(startWidth + deltaX, mainContainerWidth * 0.4));
+            const newWidth = Math.max(200, Math.min(startWidth + deltaX, mainContainerWidth * 0.4));
             
             this.$label_field.style.width = newWidth + 'px';
             this.update_column_layout();

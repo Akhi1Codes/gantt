@@ -142,7 +142,6 @@
             display: flex;
             width: 100%;
             background: var(--g-actions-background);
-            border-bottom: 1px solid var(--g-border-color);
 
             &>.gantt-labels-col {
                 flex: 1;
@@ -156,8 +155,6 @@
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
-                border-right: 1px solid var(--g-border-color);
-                border-bottom: 1px solid var(--g-border-color);
                 background: var(--g-actions-background);
                 display: flex;
                 align-items: center;
