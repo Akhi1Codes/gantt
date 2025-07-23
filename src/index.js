@@ -46,32 +46,27 @@ export default class Gantt {
             );
         }
 
-        // Create the main container first
         this.$main_container = this.create_el({
             classes: 'main-container',
-            append_to: wrapper_element, // Append to the parent element
+            append_to: wrapper_element,
         });
 
-        // Create the gantt-container first (before SVG)
         this.$container = this.create_el({
             classes: 'gantt-container',
-            append_to: this.$main_container, // Append to the main container
+            append_to: this.$main_container,
         });
 
-        // svg element
         if (!svg_element) {
-            // Create the SVG element and append it to the gantt-container
             this.$svg = createSVG('svg', {
-                append_to: this.$container, // Appending it to gantt-container
+                append_to: this.$container,
                 class: 'gantt',
             });
         } else {
             this.$svg = svg_element;
             this.$svg.classList.add('gantt');
-            this.$container.appendChild(this.$svg); // Ensure SVG is inside gantt-container
+            this.$container.appendChild(this.$svg);
         }
 
-        // Popup wrapper
         this.$popup_wrapper = this.create_el({
             classes: 'popup-wrapper',
             append_to: this.$container,
@@ -161,7 +156,6 @@ export default class Gantt {
                     return false;
                 }
 
-                // make task invalid if duration too large
                 if (date_utils.diff(task._end, task._start, 'year') > 10) {
                     console.error(
                         `the duration of task "${task.id}" is too long (above ten years)`,
@@ -267,6 +261,20 @@ export default class Gantt {
             this.options.lower_header_height +
             this.options.upper_header_height +
             10;
+
+        if (!mode.upper_text) {
+            mode.upper_text = () => '';
+        } else if (typeof mode.upper_text === 'string') {
+            mode.upper_text = (date) =>
+                date_utils.format(date, mode.upper_text, this.options.language);
+        }
+
+        if (!mode.lower_text) {
+            mode.lower_text = () => '';
+        } else if (typeof mode.lower_text === 'string') {
+            mode.lower_text = (date) =>
+                date_utils.format(date, mode.lower_text, this.options.language);
+        }
     }
 
     setup_dates(refresh = false) {
@@ -354,7 +362,6 @@ export default class Gantt {
     }
 
     render() {
-        // Save label state before clearing if preserving state
         let savedLabelState = null;
         if (this.label && this._preserveLabelState) {
             console.log('Preserving label state during render');
@@ -372,7 +379,6 @@ export default class Gantt {
         this.set_dimensions();
         this.set_scroll_position(this.options.scroll_to);
         
-        // Restore label state after rendering if it was saved
         if (savedLabelState && this._preserveLabelState) {
             if (this.label) {
                 this.label.restore_state(savedLabelState);
@@ -384,7 +390,6 @@ export default class Gantt {
     setup_layers() {
         this.layers = {};
         const layers = ['grid', 'arrow', 'progress', 'bar'];
-        // make group layers
         for (let layer of layers) {
             this.layers[layer] = createSVG('g', {
                 class: layer,
@@ -490,7 +495,6 @@ export default class Gantt {
         this.$side_header = this.create_el({ classes: 'side-header' });
         this.$upper_header.prepend(this.$side_header);
 
-        // Create view mode change select
         if (this.options.view_mode_select) {
             const $select = document.createElement('select');
             $select.classList.add('viewmode-select');
@@ -519,23 +523,26 @@ export default class Gantt {
             this.$side_header.appendChild($select);
         }
 
-        // Create today button
         if (this.options.today_button) {
-            let $today_button = document.createElement('button');
-            $today_button.classList.add('today-button');
-            $today_button.textContent = 'Today';
-            $today_button.onclick = this.scroll_current.bind(this);
-            this.$side_header.prepend($today_button);
-            this.$today_button = $today_button;
+            this.$today_button = this.create_el({
+                classes: 'today-button',
+                type: 'button',
+                append_to: this.$side_header,
+            });
+            this.$today_button.textContent = 'Today';
+            this.$today_button.onclick = this.scroll_current.bind(this);
+            this.$side_header.prepend(this.$today_button);
         }
 
         if (this.options.label_button) {
-            let $label_button = document.createElement('button');
-            $label_button.classList.add('label-button');
-            $label_button.textContent = 'Label';
-            $label_button.onclick = this.toggle_label_field.bind(this);
-            this.$side_header.prepend($label_button);
-            this.$label_button = $label_button;
+            this.$label_button = this.create_el({
+                classes: 'label-button',
+                type: 'button',
+                append_to: this.$side_header,
+            });
+            this.$label_button.textContent = 'Label';
+            this.$label_button.onclick = this.toggle_label_field.bind(this);
+            this.$side_header.prepend(this.$label_button);
             if (this.label && !this._preserveLabelState) {
                 this.label.show();
             }
@@ -851,31 +858,12 @@ export default class Gantt {
             ? last_date_info.x + last_date_info.column_width
             : 0;
 
-        let upper_text = this.config.view_mode.upper_text;
-        let lower_text = this.config.view_mode.lower_text;
-
-        if (!upper_text) {
-            this.config.view_mode.upper_text = () => '';
-        } else if (typeof upper_text === 'string') {
-            this.config.view_mode.upper_text = (date) =>
-                date_utils.format(date, upper_text, this.options.language);
-        }
-
-        if (!lower_text) {
-            this.config.view_mode.lower_text = () => '';
-        } else if (typeof lower_text === 'string') {
-            this.config.view_mode.lower_text = (date) =>
-                date_utils.format(date, lower_text, this.options.language);
-        }
-
         return {
             date,
-            formatted_date: sanitize(
-                date_utils.format(
-                    date,
-                    this.config.date_format,
-                    this.options.language,
-                ),
+            formatted_date: format_and_sanitize_date(
+                date,
+                this.config.date_format,
+                this.options.language,
             ),
             column_width: this.config.column_width,
             x,
@@ -1025,27 +1013,22 @@ export default class Gantt {
         let current = new Date(),
             el = this.$container.querySelector(
                 '.date_' +
-                sanitize(
-                    date_utils.format(
-                        current,
-                        this.config.date_format,
-                        this.options.language,
-                    ),
+                format_and_sanitize_date(
+                    current,
+                    this.config.date_format,
+                    this.options.language,
                 ),
             );
 
-        // safety check to prevent infinite loop
         let c = 0;
         while (!el && c < this.config.step) {
             current = date_utils.add(current, -1, this.config.unit);
             el = this.$container.querySelector(
                 '.date_' +
-                sanitize(
-                    date_utils.format(
-                        current,
-                        this.config.date_format,
-                        this.options.language,
-                    ),
+                format_and_sanitize_date(
+                    current,
+                    this.config.date_format,
+                    this.options.language,
                 ),
             );
             c++;
@@ -1300,7 +1283,6 @@ export default class Gantt {
                 (el) => el.textContent === current_upper,
             );
 
-            // Recalculate for smoother experience
             this.current_date = date_utils.add(
                 this.gantt_start,
                 ((e.currentTarget.scrollLeft + $el.clientWidth) /
@@ -1659,20 +1641,20 @@ export default class Gantt {
     }
 
     setup_labels(labels) {
-        if (labels) {
-            if (!this.label) {
-                this.label = new Label(this, labels);
-            } else {
-                this.label.update_labels(labels);
-            }
-        }
+        this.init_label(labels);
     }
 
     toggle_label_field() {
-        if (!this.label) {
-            this.label = new Label(this, []);
-        }
+        this.init_label();
         this.label.toggle();
+    }
+
+    init_label(labels) {
+        if (!this.label) {
+            this.label = new Label(this, labels || []);
+        } else if (labels) {
+            this.label.update_labels(labels);
+        }
     }
 }
 
@@ -1692,4 +1674,8 @@ function generate_id(task) {
 
 function sanitize(s) {
     return s.replaceAll(' ', '_').replaceAll(':', '_').replaceAll('.', '_');
+}
+
+function format_and_sanitize_date(date, format, language) {
+    return sanitize(date_utils.format(date, format, language));
 }
