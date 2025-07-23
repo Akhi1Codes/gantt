@@ -20,6 +20,7 @@
     --g-highlight-text: #fff;
     --g-popup-actions: #ebeff2;
     --g-weekend-highlight-color: #f7f7f7;
+    --g-original-color: #171717;
     --scrollbar-thumb: #ccc;
     --scrollbar-track: transparent;
 }
@@ -47,6 +48,7 @@
         --g-highlight-text: #fff;
         --g-popup-actions: #2b2b2b;
         --g-weekend-highlight-color: #2a2a2a;
+        --g-original-color: #e67e22;
         --scrollbar-thumb: #555;
         --scrollbar-track: #1a1a1a;
     }

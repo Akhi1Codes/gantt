@@ -466,6 +466,19 @@
         -webkit-user-select: none;
         position: absolute;
 
+        & .bar-original-line {
+            stroke:var(--g-original-color);
+            stroke-width: 2px;
+            stroke-dasharray: 4, 4;
+            opacity: 0.8;
+        }
+        
+        & .bar-original-triangle {
+            fill: var(--g-original-color);
+            opacity: 0.85;
+            stroke: none;
+        }
+
         & .grid-background {
             fill: none;
         }
@@ -569,19 +582,6 @@
             }
         }
     }
-}
-
-.gantt .bar-original-line {
-    stroke: #e67e22;
-    stroke-width: 2px;
-    stroke-dasharray: 4, 4;
-    opacity: 0.8;
-}
-
-.gantt .bar-original-triangle {
-    fill: #e67e22;
-    opacity: 0.85;
-    stroke: none;
 }
 
 /* Scrollbar */
