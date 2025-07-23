@@ -92,50 +92,42 @@
                     min-width: 200px;
                     max-height: 300px;
                     overflow-y: auto;
-                }
-                
-                &.dropdown-above .gantt-label-settings-dropdown {
-                    top: auto;
-                    bottom: 100%;
-                    margin-top: 0;
-                    margin-bottom: 2px;
-                }
-            }
-        }
 
-        & .gantt-label-settings-dropdown {
-            & .dropdown-header {
-                padding: 8px 12px;
-                background: #f8f9fa;
-                border-bottom: 1px solid #e0e0e0;
-                font-weight: bold;
-                font-size: 1em;
-                color: #333;
-            }
+                    & .dropdown-header {
+                        padding: 8px 12px;
+                        background: #f8f9fa;
+                        border-bottom: 1px solid #e0e0e0;
+                        font-weight: bold;
+                        font-size: 1em;
+                        color: #333;
+                    }
 
-            & .checkbox-item {
-                display: flex;
-                align-items: center;
-                padding: 8px 12px;
-                border-bottom: 1px solid #f0f0f0;
-                cursor: pointer;
-                transition: background-color 0.15s;
-
-                &:hover {
-                    background-color: #f5f7fa;
-                }
-
-                & input[type="checkbox"] {
-                    margin-right: 8px;
-                    cursor: pointer;
-                }
-
-                & label {
-                    cursor: pointer;
-                    font-size: 1.1em;
-                    font-weight: 600;
-                    color: #444;
-                    flex: 1;
+                    & .checkbox-item,
+                    & .checkbox-item.unselected {
+                        display: flex;
+                        align-items: center;
+                        padding: 8px 12px;
+                        border-bottom: 1px solid #f0f0f0;
+                        cursor: pointer;
+                        transition: background-color 0.15s;
+                    }
+                    & .checkbox-item.unselected {
+                        background: #f3f3f3;
+                    }
+                    & .checkbox-item:hover {
+                        background-color: #f5f7fa;
+                    }
+                    & .checkbox-item input[type="checkbox"] {
+                        margin-right: 8px;
+                        cursor: pointer;
+                    }
+                    & .checkbox-item label {
+                        cursor: pointer;
+                        font-size: 1.1em;
+                        font-weight: 600;
+                        color: #444;
+                        flex: 1;
+                    }
                 }
             }
         }
@@ -574,10 +566,4 @@
             }
         }
     }
-}
-.gantt-label-settings-dropdown .checkbox-item.unselected {
-    background: #f3f3f3;
-}
-.gantt-label-settings-dropdown.no-bg .checkbox-item {
-    background: none !important;
 }
