@@ -10,6 +10,24 @@ import { DEFAULT_OPTIONS, DEFAULT_VIEW_MODES } from './defaults';
 
 import './styles/gantt.css';
 
+function throttle(fn, wait) {
+    let lastTime = 0;
+    let timeout;
+    return function(...args) {
+        const now = Date.now();
+        if (now - lastTime >= wait) {
+            lastTime = now;
+            fn.apply(this, args);
+        } else {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                lastTime = Date.now();
+                fn.apply(this, args);
+            }, wait - (now - lastTime));
+        }
+    };
+}
+
 export default class Gantt {
     constructor(wrapper, tasks, options) {
         this.setup_wrapper(wrapper);
@@ -22,7 +40,6 @@ export default class Gantt {
     setup_wrapper(element) {
         let svg_element, wrapper_element;
 
-        // CSS Selector is passed
         if (typeof element === 'string') {
             let el = document.querySelector(element);
             if (!el) {
@@ -33,7 +50,6 @@ export default class Gantt {
             element = el;
         }
 
-        // get the SVGElement
         if (element instanceof HTMLElement) {
             wrapper_element = element;
             svg_element = element.querySelector('svg');
@@ -755,12 +771,18 @@ export default class Gantt {
         const height =
             (this.options.bar_height + this.options.padding) *
             this.tasks.length;
-        this.layers.grid.innerHTML += `<pattern id="diagonalHatch" patternUnits="userSpaceOnUse" width="4" height="4">
-          <path d="M-1,1 l2,-2
-                   M0,4 l4,-4
-                   M3,5 l2,-2"
-                style="stroke:grey; stroke-width:0.3" />
-        </pattern>`;
+        // Only insert the pattern if it doesn't already exist
+        if (!this.$svg.querySelector('#diagonalHatch')) {
+            this.layers.grid.innerHTML += `<pattern id="diagonalHatch" patternUnits="userSpaceOnUse" width="4" height="4">
+              <path d="M-1,1 l2,-2
+                       M0,4 l4,-4
+                       M3,5 l2,-2"
+                    style="stroke:grey; stroke-width:0.3" />
+            </pattern>`;
+        }
+
+        // Cache ignored_dates as a Set for O(1) lookup
+        const ignoredDateSet = new Set(this.config.ignored_dates.map(d => d.getTime()));
 
         for (
             let d = new Date(this.gantt_start);
@@ -768,9 +790,7 @@ export default class Gantt {
             d.setDate(d.getDate() + 1)
         ) {
             if (
-                !this.config.ignored_dates.find(
-                    (k) => k.getTime() == d.getTime(),
-                ) &&
+                !ignoredDateSet.has(d.getTime()) &&
                 (!this.config.ignored_function ||
                     !this.config.ignored_function(d))
             )
@@ -984,7 +1004,6 @@ export default class Gantt {
             (el) => el.textContent === current_upper,
         );
 
-        // Recalculate
         this.current_date = date_utils.add(
             this.gantt_start,
             (this.$container.scrollLeft + $el.clientWidth) /
@@ -1166,23 +1185,13 @@ export default class Gantt {
 
         if (this.options.infinite_padding) {
             let extended = false;
-            let lastScrollTime = 0;
-            
-            $.on(this.$container, 'wheel', (e) => {
-                // Skip infinite padding if we're syncing label scroll
+            $.on(this.$container, 'wheel', throttle((e) => {
                 if (this._isSyncingLabelScroll) return;
-                
-                const now = Date.now();
-                if (now - lastScrollTime < 100) return;
-                lastScrollTime = now;
-                
                 const container = e.currentTarget;
                 const atTop = container.scrollTop <= 5;
                 const atBottom = container.scrollTop + container.clientHeight >= container.scrollHeight - 5;
-                
                 const scrollingUp = e.deltaY < 0;
                 const scrollingDown = e.deltaY > 0;
-                
                 if (!extended && atTop && scrollingUp) {
                     let old_scroll_top = container.scrollTop;
                     let old_grid_height = this.grid_height;
@@ -1190,70 +1199,55 @@ export default class Gantt {
                     let [min_start, max_start, max_end] = this.get_start_end_positions();
                     let relative_bar_position = min_start;
                     extended = true;
-
                     this.gantt_start = date_utils.add(
                         this.gantt_start,
                         -this.config.extend_by_units,
                         this.config.unit,
                     );
                     this.setup_date_values();
-                    
-                    // Preserve label state during infinite padding re-render
                     console.log('Setting _preserveLabelState = true for upward scroll');
                     this._preserveLabelState = true;
                     this.render();
-                    
                     let [new_min_start, new_max_start, new_max_end] = this.get_start_end_positions();
                     let bar_position_change = new_min_start - relative_bar_position;
-                    
                     let new_grid_height = this.grid_height;
                     let height_difference = new_grid_height - old_grid_height;
                     container.scrollTop = old_scroll_top + height_difference;
-                    
                     if (this.label && this.label.$labels_scroll) {
                         this.label.$labels_scroll.scrollTop = old_label_scroll + height_difference;
                     }
-                    
                     if (Math.abs(bar_position_change) > 0) {
                         container.scrollLeft += bar_position_change;
                     }
                     setTimeout(() => (extended = false), 300);
                 }
-
                 if (!extended && atBottom && scrollingDown) {
                     let old_scroll_top = container.scrollTop;
                     let old_label_scroll = this.label && this.label.$labels_scroll ? this.label.$labels_scroll.scrollTop : 0;
                     let [min_start, max_start, max_end] = this.get_start_end_positions();
                     let relative_bar_position = min_start;
                     extended = true;
-                    
                     this.gantt_end = date_utils.add(
                         this.gantt_end,
                         this.config.extend_by_units,
                         this.config.unit,
                     );
                     this.setup_date_values();
-                    
-                    // Preserve label state during infinite padding re-render
                     console.log('Setting _preserveLabelState = true for downward scroll');
                     this._preserveLabelState = true;
                     this.render();
-
                     let [new_min_start, new_max_start, new_max_end] = this.get_start_end_positions();
                     let bar_position_change = new_min_start - relative_bar_position;
-                    
                     container.scrollTop = old_scroll_top;
-                    
                     if (this.label && this.label.$labels_scroll) {
                         this.label.$labels_scroll.scrollTop = old_label_scroll;
                     }
-
                     if (Math.abs(bar_position_change) > 0) {
                         container.scrollLeft += bar_position_change;
                     }
                     setTimeout(() => (extended = false), 300);
                 }
-            });
+            }, 100));
         }
 
         $.on(this.$container, 'scroll', (e) => {
@@ -1266,7 +1260,6 @@ export default class Gantt {
                 dx = e.currentTarget.scrollLeft - x_on_scroll_start;
             }
 
-            // Calculate current scroll position's upper text
             this.current_date = date_utils.add(
                 this.gantt_start,
                 (e.currentTarget.scrollLeft / this.config.column_width) *

@@ -643,7 +643,8 @@ export default class Bar {
 
     compute_duration() {
         let actual_duration_in_days = 0,
-            duration_in_days = 0;
+            duration_in_days = 0;  
+        const ignoredDateSet = new Set(this.gantt.config.ignored_dates.map(d => d.getTime()));
         for (
             let d = new Date(this.task._start);
             d < this.task._end;
@@ -651,9 +652,7 @@ export default class Bar {
         ) {
             duration_in_days++;
             if (
-                !this.gantt.config.ignored_dates.find(
-                    (k) => k.getTime() === d.getTime(),
-                ) &&
+                !ignoredDateSet.has(d.getTime()) &&
                 (!this.gantt.config.ignored_function ||
                     !this.gantt.config.ignored_function(d))
             ) {
