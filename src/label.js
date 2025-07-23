@@ -37,6 +37,7 @@ export default class Label {
         this.create_headers_row();
         this.create_values_area();
         this.setup_scroll_sync();
+        this.create_resize_handle();
 
         this.gantt.$main_container.prepend(this.$label_field);
     }
@@ -70,46 +71,80 @@ export default class Label {
 
         $label_header.appendChild($settings_icon);
         this.$label_field.appendChild($label_header);
-        document.addEventListener('click', (e) => {
-            if (this.$settings_dropdown && !$settings_icon.contains(e.target)) {
+        
+        this._clickOutsideHandler = (e) => {
+            if (this.$settings_dropdown && !$settings_icon.contains(e.target) && !this.$settings_dropdown.contains(e.target)) {
                 this.hide_settings_dropdown();
             }
-        });
+        };
+        document.addEventListener('click', this._clickOutsideHandler);
     }
 
     create_settings_dropdown($parent) {
         this.$settings_dropdown = document.createElement('div');
         this.$settings_dropdown.classList.add('gantt-label-settings-dropdown');
         this.$settings_dropdown.style.display = 'none';
-        this.visibleHeaders = new Set(this.labelHeaders);
-        
+        this.visibleHeaders = new Set(this.labelHeaders.slice(0, 2));
+
         const $dropdown_header = document.createElement('div');
         $dropdown_header.classList.add('dropdown-header');
         $dropdown_header.textContent = 'Show/Hide Columns';
         this.$settings_dropdown.appendChild($dropdown_header);
-        
+        this._headerCheckboxes = [];
+
+        const updateDropdownBackgrounds = () => {
+            const checkedCount = this._headerCheckboxes.filter(cb => cb.checked).length;
+            if (checkedCount === 3) {
+                this.$settings_dropdown.classList.remove('no-bg');
+            } else {
+                this.$settings_dropdown.classList.add('no-bg');
+            }
+            const items = this.$settings_dropdown.querySelectorAll('.checkbox-item');
+            items.forEach((item, idx) => {
+                const cb = item.querySelector('input[type="checkbox"]');
+                if (checkedCount === 3) {
+                    if (cb && !cb.checked) {
+                        item.classList.add('unselected');
+                    } else {
+                        item.classList.remove('unselected');
+                    }
+                } else {
+                    item.classList.remove('unselected');
+                }
+            });
+        };
+
         this.labelHeaders.forEach((header, index) => {
             const $checkbox_item = document.createElement('div');
             $checkbox_item.classList.add('checkbox-item');
-            
+
             const $checkbox = document.createElement('input');
             $checkbox.type = 'checkbox';
             $checkbox.id = `header-${index}`;
-            $checkbox.checked = true;
+            $checkbox.checked = index < 2;
+            if (index < 2) this.visibleHeaders.add(header);
+            else this.visibleHeaders.delete(header);
+
+            this._headerCheckboxes.push($checkbox);
+
             $checkbox.addEventListener('change', () => {
                 this.toggle_header_visibility(header, $checkbox.checked);
+                this._enforce_max_three_headers();
+                updateDropdownBackgrounds();
             });
-            
+
             const $label = document.createElement('label');
             $label.htmlFor = `header-${index}`;
             $label.textContent = header;
-            
+
             $checkbox_item.appendChild($checkbox);
             $checkbox_item.appendChild($label);
             this.$settings_dropdown.appendChild($checkbox_item);
         });
-        
+
         $parent.appendChild(this.$settings_dropdown);
+        this._enforce_max_three_headers();
+        updateDropdownBackgrounds();
     }
 
     toggle_settings_dropdown() {
@@ -122,36 +157,47 @@ export default class Label {
 
     show_settings_dropdown() {
         this.$settings_dropdown.style.display = 'block';
+        
+        const settingsIcon = this.$settings_dropdown.parentElement;
+        const rect = settingsIcon.getBoundingClientRect();
+        
+        this.$settings_dropdown.style.position = 'fixed';
+        this.$settings_dropdown.style.top = (rect.bottom + 2) + 'px';
+        this.$settings_dropdown.style.left = rect.left + 'px';
+        this.$settings_dropdown.style.zIndex = '100000';
     }
 
     hide_settings_dropdown() {
         this.$settings_dropdown.style.display = 'none';
-        this.$settings_dropdown.parentElement.classList.remove('dropdown-above');
+        
+        this.$settings_dropdown.style.position = '';
+        this.$settings_dropdown.style.top = '';
+        this.$settings_dropdown.style.left = '';
     }
 
     toggle_header_visibility(header, isVisible) {
-        console.log(`Toggling header '${header}' to ${isVisible ? 'visible' : 'hidden'}`);
         if (isVisible) {
             this.visibleHeaders.add(header);
         } else {
             this.visibleHeaders.delete(header);
         }
-        console.log('Current visibleHeaders:', Array.from(this.visibleHeaders));
         this.refresh_label_display();
     }
 
     refresh_label_display() {
-        // Remove existing headers and content
         const $existing_header = this.$label_field.querySelector('.gantt-labels-header');
         const $existing_scroll = this.$label_field.querySelector('.gantt-labels-scroll');
         
         if ($existing_header) $existing_header.remove();
         if ($existing_scroll) $existing_scroll.remove();
         
-        // Recreate with only visible headers
         this.create_headers_row();
         this.create_values_area();
         this.setup_scroll_sync();
+        
+        if (!this.$resize_handle || !this.$label_field.contains(this.$resize_handle)) {
+            this.create_resize_handle();
+        }
     }
 
     create_headers_row() {
@@ -187,6 +233,7 @@ export default class Label {
         const $labels_content = document.createElement('div');
         $labels_content.classList.add('gantt-labels-content');
         $labels_content.style.display = 'flex';
+        $labels_content.style.width = '100%';
 
         if (this.labelHeaders && this.labelHeaders.length > 0) {
             this.labelHeaders.forEach((header, colIdx) => {
@@ -247,28 +294,79 @@ export default class Label {
         }
     }
 
+    create_resize_handle() {
+        this.$resize_handle = document.createElement('div');
+        this.$resize_handle.classList.add('gantt-label-resize-handle');
+        this.$label_field.appendChild(this.$resize_handle);
+        this.setup_resize_functionality();
+    }
+
+    setup_resize_functionality() {
+        let isResizing = false;
+        let startX = 0;
+        let startWidth = 0;
+        let mainContainerWidth = 0;
+
+        const startResize = (e) => {
+            e.preventDefault();
+            isResizing = true;
+            startX = e.clientX;
+            startWidth = this.$label_field.offsetWidth;
+            mainContainerWidth = this.gantt.$main_container.offsetWidth;
+            
+            document.addEventListener('mousemove', resize);
+            document.addEventListener('mouseup', stopResize);
+            document.body.style.userSelect = 'none';
+            document.body.style.cursor = 'col-resize';
+        };
+
+        const resize = (e) => {
+            if (!isResizing) return;
+            e.preventDefault();
+            
+            const deltaX = e.clientX - startX;
+            const newWidth = Math.max(250, Math.min(startWidth + deltaX, mainContainerWidth * 0.4));
+            
+            this.$label_field.style.width = newWidth + 'px';
+            this.update_column_layout();
+            window.dispatchEvent(new Event('resize'));
+        };
+
+        const stopResize = () => {
+            isResizing = false;
+            document.removeEventListener('mousemove', resize);
+            document.removeEventListener('mouseup', stopResize);
+            document.body.style.userSelect = '';
+            document.body.style.cursor = '';
+        };
+
+        this.$resize_handle.addEventListener('mousedown', startResize);
+        const handleWindowResize = () => {
+            if (this.$label_field && this.$label_field.style.display !== 'none') {
+                const currentWidth = parseInt(this.$label_field.style.width) || 300;
+                const maxWidth = this.gantt.$main_container.offsetWidth * 0.4;
+                if (currentWidth > maxWidth) {
+                    this.$label_field.style.width = maxWidth + 'px';
+                }
+                this.update_column_layout();
+            }
+        };
+        window.addEventListener('resize', handleWindowResize);
+        
+        this._windowResizeHandler = handleWindowResize;
+    }
+
     save_state() {
-        // Save the current state for restoration after re-render
-        console.log('Saving label state:', {
-            isVisible: this.isVisible,
-            visibleHeaders: this.visibleHeaders ? Array.from(this.visibleHeaders) : null,
-            labels: this.labels
-        });
+        const labelWidth = this.$label_field ? this.$label_field.style.width || '250px' : '250px';
         return {
             isVisible: this.isVisible,
             visibleHeaders: this.visibleHeaders ? new Set(this.visibleHeaders) : null,
-            labels: this.labels
+            labels: this.labels,
+            labelWidth: labelWidth
         };
     }
 
     restore_state(state) {
-        // Restore the saved state after re-render
-        console.log('Restoring label state:', {
-            state: state,
-            currentLabelField: !!this.$label_field,
-            labelFieldAttached: this.$label_field ? !!this.$label_field.parentNode : false
-        });
-        
         if (state) {
             this.labels = state.labels || [];
             this.setup_labels();
@@ -279,18 +377,17 @@ export default class Label {
             }
             
             if (state.isVisible) {
-                // If the label field was removed during re-render, recreate it
                 if (!this.$label_field || !this.$label_field.parentNode) {
-                    console.log('Label field was removed, recreating...');
                     this.create_label_field();
                 } else {
-                    console.log('Label field exists, refreshing display...');
-                    // Just refresh the display with the preserved visible headers
                     this.refresh_label_display();
                 }
                 this.isVisible = true;
                 if (this.$label_field) {
                     this.$label_field.style.display = 'flex';
+                    if (state.labelWidth) {
+                        this.$label_field.style.width = state.labelWidth;
+                    }
                 }
             }
         }
@@ -326,7 +423,17 @@ export default class Label {
         if (this.$label_field) {
             this.$label_field.remove();
             this.$label_field = null;
+            this.$resize_handle = null;
         }
+        if (this._windowResizeHandler) {
+            window.removeEventListener('resize', this._windowResizeHandler);
+            this._windowResizeHandler = null;
+        }
+        if (this._clickOutsideHandler) {
+            document.removeEventListener('click', this._clickOutsideHandler);
+            this._clickOutsideHandler = null;
+        }
+        
         // Note: Don't reset isVisible here as it should be preserved for state restoration
     }
 
@@ -336,6 +443,47 @@ export default class Label {
         if (this.$label_field && this.$label_field.style.display !== 'none') {
             this.remove();
             this.create_label_field();
+        }
+    }
+
+    get_width() {
+        if (this.$label_field) {
+            return parseInt(this.$label_field.style.width) || 250;
+        }
+        return 250;
+    }
+
+    set_width(width) {
+        if (this.$label_field) {
+            const maxWidth = this.gantt.$main_container.offsetWidth * 0.4;
+            const clampedWidth = Math.max(150, Math.min(width, maxWidth));
+            this.$label_field.style.width = clampedWidth + 'px';
+            this.update_column_layout();
+            window.dispatchEvent(new Event('resize'));
+        }
+    }
+
+    update_column_layout() {
+        // This method can be used to optimize column widths based on content
+        // For now, the CSS flex properties handle the distribution automatically
+        // But we can add custom logic here if needed in the future
+        
+        // Force a reflow to ensure the flex layout updates properly
+        if (this.$label_field) {
+            this.$label_field.offsetHeight;
+        }
+    }
+
+    _enforce_max_three_headers() {
+        const checked = this._headerCheckboxes.filter(cb => cb.checked);
+        if (checked.length >= 3) {
+            this._headerCheckboxes.forEach(cb => {
+                if (!cb.checked) cb.disabled = true;
+            });
+        } else {
+            this._headerCheckboxes.forEach(cb => {
+                cb.disabled = false;
+            });
         }
     }
 } 

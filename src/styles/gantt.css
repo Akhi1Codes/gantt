@@ -10,6 +10,9 @@
     & .gantt-label-field {
         position: static;
         height: 100%;
+        min-width: 150px;
+        max-width: 40%;
+        width: 250px;
         background: rgba(255, 255, 255, 1);
         border-right: 1px solid #ddd;
         display: flex;
@@ -17,6 +20,47 @@
         justify-content: flex-start;
         pointer-events: auto;
         box-shadow: 2px 0 8px rgba(0, 0, 0, 0.04);
+        position: relative;
+        resize: horizontal;
+        overflow: hidden;
+
+        & .gantt-label-resize-handle {
+            position: absolute;
+            top: 0;
+            right: -3px;
+            width: 6px;
+            height: 100%;
+            cursor: col-resize;
+            background: transparent;
+            z-index: 10;
+            transition: background-color 0.2s ease;
+
+            &:hover {
+                background: rgba(0, 0, 0, 0.1);
+            }
+
+            &:active {
+                background: rgba(0, 0, 0, 0.2);
+            }
+
+            &::after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 2px;
+                height: 20px;
+                background: #ccc;
+                border-radius: 1px;
+                box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
+            }
+
+            &:hover::after {
+                background: #999;
+                box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+            }
+        }
 
         & .gantt-label-upperheader {
             display: flex;
@@ -39,18 +83,15 @@
                 position: relative;
 
                 & .gantt-label-settings-dropdown {
-                    position: absolute;
-                    top: 100%;
-                    left: 0;
+                    position: fixed;
                     background: #fff;
                     border: 1px solid #ddd;
                     border-radius: 4px;
                     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                    z-index: 9999;
+                    z-index: 100000;
                     min-width: 200px;
                     max-height: 300px;
                     overflow-y: auto;
-                    margin-top: 2px;
                 }
                 
                 &.dropdown-above .gantt-label-settings-dropdown {
@@ -106,9 +147,8 @@
             border-bottom: 1px solid #e0e0e0;
 
             &>.gantt-labels-col {
-                min-width: var(--gantt-label-col-width, 120px);
-                max-width: var(--gantt-label-col-width, 120px);
-                width: var(--gantt-label-col-width, 120px);
+                flex: 1;
+                min-width: 80px;
                 text-align: center;
                 font-weight: bold;
                 font-size: 1.05em;
@@ -124,6 +164,8 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                padding: 0 4px;
+                box-sizing: border-box;
 
                 & :last-child {
                     border-right: none;
@@ -147,17 +189,19 @@
         & .gantt-labels-content {
             display: flex;
             background: #f8f9fa;
+            width: 100%;
         }
 
         & .gantt-labels-col {
             display: flex;
             flex-direction: column;
-            min-width: var(--gantt-label-col-width, 120px);
-            max-width: var(--gantt-label-col-width, 120px);
-            width: var(--gantt-label-col-width, 120px);
+            flex: 1;
+            min-width: 80px;
             word-break: break-word;
             border-right: 1px solid #e0e0e0;
             background: #fff;
+            box-sizing: border-box;
+            overflow: hidden;
 
             & :last-child {
                 border-right: none;
@@ -172,6 +216,7 @@
             overflow: hidden;
             border-bottom: 1px solid #f0f0f0;
             box-sizing: border-box;
+            min-height: 0;
         }
 
         .gantt-labels-cell-text {
@@ -182,6 +227,8 @@
             width: 100%;
             min-width: 0;
             text-align: center;
+            font-size: 0.9em;
+            line-height: 1.2;
         }
     }
 
@@ -191,7 +238,8 @@
         overflow: auto;
         font-size: 12px;
         height: 100%;
-        width: 100%;
+        flex: 1;
+        min-width: 0;
         border-radius: 8px;
 
         & .popup-wrapper {
@@ -526,4 +574,10 @@
             }
         }
     }
+}
+.gantt-label-settings-dropdown .checkbox-item.unselected {
+    background: #f3f3f3;
+}
+.gantt-label-settings-dropdown.no-bg .checkbox-item {
+    background: none !important;
 }

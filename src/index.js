@@ -410,7 +410,6 @@ export default class Gantt {
         this.make_grid_rows();
         this.make_grid_header();
         this.make_side_header();
-        // this.make_side_bar()
     }
 
     make_grid_extras() {
