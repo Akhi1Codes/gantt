@@ -575,21 +575,20 @@
 }
 
 /* Scrollbar */
-
-.gantt-container::-webkit-scrollbar {
-    width: 8px;
-}
-
-.gantt-container::-webkit-scrollbar-track {
-    background: var(--scrollbar-track);
-}
-
-.gantt-container::-webkit-scrollbar-thumb {
-    background-color: var(--scrollbar-thumb);
-    border-radius: 4px;
-}
-
 .gantt-container {
     scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
     scrollbar-width: thin;
+
+    & ::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    & ::-webkit-scrollbar-track {
+        background: var(--scrollbar-track);
+    }
+
+    & ::-webkit-scrollbar-thumb {
+        background-color: var(--scrollbar-thumb);
+        border-radius: 4px;
+    }
 }
