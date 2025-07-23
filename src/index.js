@@ -1668,12 +1668,6 @@ export default class Gantt {
         }
     }
 
-    make_label() {
-        if (this.label) {
-            this.label.create_label_field();
-        }
-    }
-
     toggle_label_field() {
         if (!this.label) {
             this.label = new Label(this, []);
