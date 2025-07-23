@@ -424,6 +424,16 @@ export default class Bar {
     update_bar_position({ x = null, width = null }) {
         const bar = this.$bar;
 
+        if (this.task.original && x !== null) {
+            const { column_width, step, unit } = this.gantt.config;
+            const gantt_start = this.gantt.gantt_start;
+            const original_start = new Date(this.task.original);
+            const original_x = (date_utils.diff(original_start, gantt_start, unit) / step) * column_width;
+            if (x < original_x) {
+                return;
+            }
+        }
+
         if (x) {
             const xs = this.task.dependencies.map((dep) => {
                 return this.gantt.get_bar(dep).$bar.getX();
@@ -440,11 +450,12 @@ export default class Bar {
             this.update_attr(bar, 'width', width);
             this.$date_highlight.style.width = width + 'px';
         }
+
         if (this.task.original && this.$original_line && this.$original_triangle_left && this.$original_triangle_right) {
             const { column_width, step, unit } = this.gantt.config;
             const gantt_start = this.gantt.gantt_start;
             const y = this.y + this.height + 6;
-            const triangle_size = 8;
+            const triangle_size = 6;
             const triangle_height = 6;
             const original_start = new Date(this.task.original);
             const x1 = (date_utils.diff(original_start, gantt_start, unit) / step) * column_width;
