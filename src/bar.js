@@ -461,8 +461,7 @@ export default class Bar {
         if (this.gantt.options.show_expected_progress) {
             this.update_expected_progressbar_position();
         }
-        // Progress bar position updates disabled - progress remains constant
-        // this.update_progressbar_position();
+        this.update_progressbar_position();
         this.update_arrow_position();
     }
 
