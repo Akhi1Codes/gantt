@@ -85,8 +85,8 @@ export default class Bar {
         this.compute_expected_progress();
         this.expected_progress_width =
             this.gantt.options.column_width *
-            this.duration *
-            (this.expected_progress / 100) || 0;
+                this.duration *
+                (this.expected_progress / 100) || 0;
     }
 
     draw() {
@@ -402,12 +402,13 @@ export default class Bar {
         $.on(this.group, 'touchstart', (e) => {
             if (!tapedTwice) {
                 tapedTwice = true;
-                setTimeout(function () { tapedTwice = false; }, 300);
+                setTimeout(function () {
+                    tapedTwice = false;
+                }, 300);
                 return false;
             }
             e.preventDefault();
             //action on double tap goes below
-
 
             if (this.action_completed) {
                 // just finished a move action, wait for a few seconds
@@ -428,7 +429,9 @@ export default class Bar {
             const { column_width, step, unit } = this.gantt.config;
             const gantt_start = this.gantt.gantt_start;
             const original_start = new Date(this.task.original);
-            const original_x = (date_utils.diff(original_start, gantt_start, unit) / step) * column_width;
+            const original_x =
+                (date_utils.diff(original_start, gantt_start, unit) / step) *
+                column_width;
             if (x < original_x) {
                 return;
             }
@@ -451,21 +454,34 @@ export default class Bar {
             this.$date_highlight.style.width = width + 'px';
         }
 
-        if (this.task.original && this.$original_line && this.$original_triangle_left && this.$original_triangle_right) {
+        if (
+            this.task.original &&
+            this.$original_line &&
+            this.$original_triangle_left &&
+            this.$original_triangle_right
+        ) {
             const { column_width, step, unit } = this.gantt.config;
             const gantt_start = this.gantt.gantt_start;
             const y = this.y + this.height + 6;
             const triangle_size = 6;
             const triangle_height = 6;
             const original_start = new Date(this.task.original);
-            const x1 = (date_utils.diff(original_start, gantt_start, unit) / step) * column_width;
+            const x1 =
+                (date_utils.diff(original_start, gantt_start, unit) / step) *
+                column_width;
             const x2 = this.x + (width !== null ? width : this.width);
             this.$original_line.setAttribute('x1', x1);
             this.$original_line.setAttribute('x2', x2);
             this.$original_line.setAttribute('y1', y);
             this.$original_line.setAttribute('y2', y);
-            this.$original_triangle_left.setAttribute('points', `${x1},${y} ${x1},${y - triangle_height / 2} ${x1 + triangle_size},${y}`);
-            this.$original_triangle_right.setAttribute('points', `${x2},${y} ${x2},${y - triangle_height / 2} ${x2 - triangle_size},${y}`);
+            this.$original_triangle_left.setAttribute(
+                'points',
+                `${x1},${y} ${x1},${y - triangle_height / 2} ${x1 + triangle_size},${y}`,
+            );
+            this.$original_triangle_right.setAttribute(
+                'points',
+                `${x2},${y} ${x2},${y - triangle_height / 2} ${x2 - triangle_size},${y}`,
+            );
         }
 
         this.update_label_position();
@@ -579,7 +595,7 @@ export default class Bar {
             this.gantt.config.ignored_positions.reduce((acc, val) => {
                 return acc + (val >= this.x && val <= progress_area);
             }, 0) *
-            this.gantt.config.column_width;
+                this.gantt.config.column_width;
         if (progress < 0) return 0;
         const total =
             this.$bar.getWidth() -
@@ -643,8 +659,10 @@ export default class Bar {
 
     compute_duration() {
         let actual_duration_in_days = 0,
-            duration_in_days = 0;  
-        const ignoredDateSet = new Set(this.gantt.config.ignored_dates.map(d => d.getTime()));
+            duration_in_days = 0;
+        const ignoredDateSet = new Set(
+            this.gantt.config.ignored_dates.map((d) => d.getTime()),
+        );
         for (
             let d = new Date(this.task._start);
             d < this.task._end;
@@ -692,8 +710,8 @@ export default class Bar {
         this.$expected_bar_progress.setAttribute(
             'width',
             this.gantt.config.column_width *
-            this.actual_duration_raw *
-            (this.expected_progress / 100) || 0,
+                this.actual_duration_raw *
+                (this.expected_progress / 100) || 0,
         );
     }
 
@@ -771,8 +789,12 @@ export default class Bar {
         const triangle_size = 6;
         const triangle_height = 6;
         const original_start = new Date(this.task.original);
-        const x1 = (date_utils.diff(original_start, gantt_start, unit) / step) * column_width;
-        const x2 = (date_utils.diff(this.task._end, gantt_start, unit) / step) * column_width;
+        const x1 =
+            (date_utils.diff(original_start, gantt_start, unit) / step) *
+            column_width;
+        const x2 =
+            (date_utils.diff(this.task._end, gantt_start, unit) / step) *
+            column_width;
         this.$original_line = createSVG('line', {
             x1,
             y1: y,

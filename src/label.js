@@ -12,7 +12,7 @@ export default class Label {
 
         const labelMap = new Map();
 
-        this.labels.forEach(labelObj => {
+        this.labels.forEach((labelObj) => {
             Object.entries(labelObj).forEach(([header, values]) => {
                 if (!labelMap.has(header)) {
                     labelMap.set(header, Array.isArray(values) ? values : []);
@@ -71,9 +71,13 @@ export default class Label {
 
         $label_header.appendChild($settings_icon);
         this.$label_field.appendChild($label_header);
-        
+
         this._clickOutsideHandler = (e) => {
-            if (this.$settings_dropdown && !$settings_icon.contains(e.target) && !this.$settings_dropdown.contains(e.target)) {
+            if (
+                this.$settings_dropdown &&
+                !$settings_icon.contains(e.target) &&
+                !this.$settings_dropdown.contains(e.target)
+            ) {
                 this.hide_settings_dropdown();
             }
         };
@@ -93,13 +97,16 @@ export default class Label {
         this._headerCheckboxes = [];
 
         const updateDropdownBackgrounds = () => {
-            const checkedCount = this._headerCheckboxes.filter(cb => cb.checked).length;
+            const checkedCount = this._headerCheckboxes.filter(
+                (cb) => cb.checked,
+            ).length;
             if (checkedCount === 3) {
                 this.$settings_dropdown.classList.remove('no-bg');
             } else {
                 this.$settings_dropdown.classList.add('no-bg');
             }
-            const items = this.$settings_dropdown.querySelectorAll('.checkbox-item');
+            const items =
+                this.$settings_dropdown.querySelectorAll('.checkbox-item');
             items.forEach((item, idx) => {
                 const cb = item.querySelector('input[type="checkbox"]');
                 if (checkedCount === 3) {
@@ -157,19 +164,19 @@ export default class Label {
 
     show_settings_dropdown() {
         this.$settings_dropdown.style.display = 'block';
-        
+
         const settingsIcon = this.$settings_dropdown.parentElement;
         const rect = settingsIcon.getBoundingClientRect();
-        
+
         this.$settings_dropdown.style.position = 'fixed';
-        this.$settings_dropdown.style.top = (rect.bottom + 2) + 'px';
+        this.$settings_dropdown.style.top = rect.bottom + 2 + 'px';
         this.$settings_dropdown.style.left = rect.left + 'px';
         this.$settings_dropdown.style.zIndex = '100000';
     }
 
     hide_settings_dropdown() {
         this.$settings_dropdown.style.display = 'none';
-        
+
         this.$settings_dropdown.style.position = '';
         this.$settings_dropdown.style.top = '';
         this.$settings_dropdown.style.left = '';
@@ -185,17 +192,24 @@ export default class Label {
     }
 
     refresh_label_display() {
-        const $existing_header = this.$label_field.querySelector('.gantt-labels-header');
-        const $existing_scroll = this.$label_field.querySelector('.gantt-labels-scroll');
-        
+        const $existing_header = this.$label_field.querySelector(
+            '.gantt-labels-header',
+        );
+        const $existing_scroll = this.$label_field.querySelector(
+            '.gantt-labels-scroll',
+        );
+
         if ($existing_header) $existing_header.remove();
         if ($existing_scroll) $existing_scroll.remove();
-        
+
         this.create_headers_row();
         this.create_values_area();
         this.setup_scroll_sync();
-        
-        if (!this.$resize_handle || !this.$label_field.contains(this.$resize_handle)) {
+
+        if (
+            !this.$resize_handle ||
+            !this.$label_field.contains(this.$resize_handle)
+        ) {
             this.create_resize_handle();
         }
     }
@@ -243,7 +257,7 @@ export default class Label {
 
                     const values = this.labelColumns[colIdx];
                     if (Array.isArray(values)) {
-                        values.forEach(val => {
+                        values.forEach((val) => {
                             const $val = document.createElement('div');
                             $val.classList.add('gantt-labels-cell');
 
@@ -252,7 +266,9 @@ export default class Label {
                             $text.textContent = val;
                             $text.title = val;
 
-                            const height = this.gantt.options.bar_height + this.gantt.options.padding;
+                            const height =
+                                this.gantt.options.bar_height +
+                                this.gantt.options.padding;
                             $val.style.height = height + 'px';
 
                             $val.appendChild($text);
@@ -313,7 +329,7 @@ export default class Label {
             startX = e.clientX;
             startWidth = this.$label_field.offsetWidth;
             mainContainerWidth = this.gantt.$main_container.offsetWidth;
-            
+
             document.addEventListener('mousemove', resize);
             document.addEventListener('mouseup', stopResize);
             document.body.style.userSelect = 'none';
@@ -323,10 +339,13 @@ export default class Label {
         const resize = (e) => {
             if (!isResizing) return;
             e.preventDefault();
-            
+
             const deltaX = e.clientX - startX;
-            const newWidth = Math.max(200, Math.min(startWidth + deltaX, mainContainerWidth * 0.4));
-            
+            const newWidth = Math.max(
+                200,
+                Math.min(startWidth + deltaX, mainContainerWidth * 0.4),
+            );
+
             this.$label_field.style.width = newWidth + 'px';
             this.update_column_layout();
             window.dispatchEvent(new Event('resize'));
@@ -342,8 +361,12 @@ export default class Label {
 
         this.$resize_handle.addEventListener('mousedown', startResize);
         const handleWindowResize = () => {
-            if (this.$label_field && this.$label_field.style.display !== 'none') {
-                const currentWidth = parseInt(this.$label_field.style.width) || 300;
+            if (
+                this.$label_field &&
+                this.$label_field.style.display !== 'none'
+            ) {
+                const currentWidth =
+                    parseInt(this.$label_field.style.width) || 300;
                 const maxWidth = this.gantt.$main_container.offsetWidth * 0.4;
                 if (currentWidth > maxWidth) {
                     this.$label_field.style.width = maxWidth + 'px';
@@ -352,17 +375,21 @@ export default class Label {
             }
         };
         window.addEventListener('resize', handleWindowResize);
-        
+
         this._windowResizeHandler = handleWindowResize;
     }
 
     save_state() {
-        const labelWidth = this.$label_field ? this.$label_field.style.width || '250px' : '250px';
+        const labelWidth = this.$label_field
+            ? this.$label_field.style.width || '250px'
+            : '250px';
         return {
             isVisible: this.isVisible,
-            visibleHeaders: this.visibleHeaders ? new Set(this.visibleHeaders) : null,
+            visibleHeaders: this.visibleHeaders
+                ? new Set(this.visibleHeaders)
+                : null,
             labels: this.labels,
-            labelWidth: labelWidth
+            labelWidth: labelWidth,
         };
     }
 
@@ -370,12 +397,15 @@ export default class Label {
         if (state) {
             this.labels = state.labels || [];
             this.setup_labels();
-            
+
             if (state.visibleHeaders) {
                 this.visibleHeaders = new Set(state.visibleHeaders);
-                console.log('Restored visibleHeaders:', Array.from(this.visibleHeaders));
+                console.log(
+                    'Restored visibleHeaders:',
+                    Array.from(this.visibleHeaders),
+                );
             }
-            
+
             if (state.isVisible) {
                 if (!this.$label_field || !this.$label_field.parentNode) {
                     this.create_label_field();
@@ -433,7 +463,7 @@ export default class Label {
             document.removeEventListener('click', this._clickOutsideHandler);
             this._clickOutsideHandler = null;
         }
-        
+
         // Note: Don't reset isVisible here as it should be preserved for state restoration
     }
 
@@ -467,7 +497,7 @@ export default class Label {
         // This method can be used to optimize column widths based on content
         // For now, the CSS flex properties handle the distribution automatically
         // But we can add custom logic here if needed in the future
-        
+
         // Force a reflow to ensure the flex layout updates properly
         if (this.$label_field) {
             this.$label_field.offsetHeight;
@@ -475,15 +505,15 @@ export default class Label {
     }
 
     _enforce_max_three_headers() {
-        const checked = this._headerCheckboxes.filter(cb => cb.checked);
+        const checked = this._headerCheckboxes.filter((cb) => cb.checked);
         if (checked.length >= 3) {
-            this._headerCheckboxes.forEach(cb => {
+            this._headerCheckboxes.forEach((cb) => {
                 if (!cb.checked) cb.disabled = true;
             });
         } else {
-            this._headerCheckboxes.forEach(cb => {
+            this._headerCheckboxes.forEach((cb) => {
                 cb.disabled = false;
             });
         }
     }
-} 
+}

@@ -13,17 +13,20 @@ import './styles/gantt.css';
 function throttle(fn, wait) {
     let lastTime = 0;
     let timeout;
-    return function(...args) {
+    return function (...args) {
         const now = Date.now();
         if (now - lastTime >= wait) {
             lastTime = now;
             fn.apply(this, args);
         } else {
             clearTimeout(timeout);
-            timeout = setTimeout(() => {
-                lastTime = Date.now();
-                fn.apply(this, args);
-            }, wait - (now - lastTime));
+            timeout = setTimeout(
+                () => {
+                    lastTime = Date.now();
+                    fn.apply(this, args);
+                },
+                wait - (now - lastTime),
+            );
         }
     };
 }
@@ -58,7 +61,7 @@ export default class Gantt {
         } else {
             throw new TypeError(
                 'Frappe Gantt only supports usage of a string CSS selector,' +
-                " HTML DOM element or SVG DOM element for the 'element' parameter",
+                    " HTML DOM element or SVG DOM element for the 'element' parameter",
             );
         }
 
@@ -382,7 +385,7 @@ export default class Gantt {
         if (this.label && this._preserveLabelState) {
             savedLabelState = this.label.save_state();
         }
-        
+
         this.clear();
         this.setup_layers();
         this.make_grid();
@@ -393,7 +396,7 @@ export default class Gantt {
         this.map_arrows_on_bars();
         this.set_dimensions();
         this.set_scroll_position(this.options.scroll_to);
-        
+
         if (savedLabelState && this._preserveLabelState) {
             if (this.label) {
                 this.label.restore_state(savedLabelState);
@@ -439,10 +442,10 @@ export default class Gantt {
         const grid_width = this.dates.length * this.config.column_width;
         const grid_height = Math.max(
             this.config.header_height +
-            this.options.padding +
-            (this.options.bar_height + this.options.padding) *
-            this.tasks.length -
-            10,
+                this.options.padding +
+                (this.options.bar_height + this.options.padding) *
+                    this.tasks.length -
+                10,
             this.options.container_height !== 'auto'
                 ? this.options.container_height
                 : 0,
@@ -570,7 +573,8 @@ export default class Gantt {
             append_to: this.$main_container,
         });
         this.$sidebar.style.top = this.config.header_height + 'px';
-        this.$sidebar.style.height = this.grid_height - this.config.header_height + 'px';
+        this.$sidebar.style.height =
+            this.grid_height - this.config.header_height + 'px';
     }
 
     make_grid_ticks() {
@@ -781,7 +785,9 @@ export default class Gantt {
         }
 
         // Cache ignored_dates as a Set for O(1) lookup
-        const ignoredDateSet = new Set(this.config.ignored_dates.map(d => d.getTime()));
+        const ignoredDateSet = new Set(
+            this.config.ignored_dates.map((d) => d.getTime()),
+        );
 
         for (
             let d = new Date(this.gantt_start);
@@ -979,7 +985,10 @@ export default class Gantt {
             this.config.column_width;
 
         this.$container.scrollTo({
-            left: scroll_pos - (this.$container.clientWidth / 2) + (this.config.column_width / 2),
+            left:
+                scroll_pos -
+                this.$container.clientWidth / 2 +
+                this.config.column_width / 2,
             behavior: 'smooth',
         });
 
@@ -1006,7 +1015,7 @@ export default class Gantt {
         this.current_date = date_utils.add(
             this.gantt_start,
             (this.$container.scrollLeft + $el.clientWidth) /
-            this.config.column_width,
+                this.config.column_width,
             this.config.unit,
         );
         current_upper = this.config.view_mode.upper_text(
@@ -1031,11 +1040,11 @@ export default class Gantt {
         let current = new Date(),
             el = this.$container.querySelector(
                 '.date_' +
-                format_and_sanitize_date(
-                    current,
-                    this.config.date_format,
-                    this.options.language,
-                ),
+                    format_and_sanitize_date(
+                        current,
+                        this.config.date_format,
+                        this.options.language,
+                    ),
             );
 
         let c = 0;
@@ -1043,11 +1052,11 @@ export default class Gantt {
             current = date_utils.add(current, -1, this.config.unit);
             el = this.$container.querySelector(
                 '.date_' +
-                format_and_sanitize_date(
-                    current,
-                    this.config.date_format,
-                    this.options.language,
-                ),
+                    format_and_sanitize_date(
+                        current,
+                        this.config.date_format,
+                        this.options.language,
+                    ),
             );
             c++;
         }
@@ -1184,73 +1193,97 @@ export default class Gantt {
 
         if (this.options.infinite_padding) {
             let extended = false;
-            $.on(this.$container, 'wheel', throttle((e) => {
-                if (this._isSyncingLabelScroll) return;
-                const container = e.currentTarget;
-                const atTop = container.scrollTop <= 5;
-                const atBottom = container.scrollTop + container.clientHeight >= container.scrollHeight - 5;
-                const scrollingUp = e.deltaY < 0;
-                const scrollingDown = e.deltaY > 0;
+            $.on(
+                this.$container,
+                'wheel',
+                throttle((e) => {
+                    if (this._isSyncingLabelScroll) return;
+                    const container = e.currentTarget;
+                    const atTop = container.scrollTop <= 5;
+                    const atBottom =
+                        container.scrollTop + container.clientHeight >=
+                        container.scrollHeight - 5;
+                    const scrollingUp = e.deltaY < 0;
+                    const scrollingDown = e.deltaY > 0;
 
-                if (!extended && atTop && scrollingUp) {
-                    let old_scroll_top = container.scrollTop;
-                    let old_grid_height = this.grid_height;
-                    let old_label_scroll = this.label && this.label.$labels_scroll ? this.label.$labels_scroll.scrollTop : 0;
-                    let [min_start, max_start, max_end] = this.get_start_end_positions();
-                    let relative_bar_position = min_start;
-                    extended = true;
-                    this.gantt_start = date_utils.add(
-                        this.gantt_start,
-                        -this.config.extend_by_units,
-                        this.config.unit,
-                    );
-                    this.setup_date_values();
-                    this._preserveLabelState = true;
-                    this.render();
+                    if (!extended && atTop && scrollingUp) {
+                        let old_scroll_top = container.scrollTop;
+                        let old_grid_height = this.grid_height;
+                        let old_label_scroll =
+                            this.label && this.label.$labels_scroll
+                                ? this.label.$labels_scroll.scrollTop
+                                : 0;
+                        let [min_start, max_start, max_end] =
+                            this.get_start_end_positions();
+                        let relative_bar_position = min_start;
+                        extended = true;
+                        this.gantt_start = date_utils.add(
+                            this.gantt_start,
+                            -this.config.extend_by_units,
+                            this.config.unit,
+                        );
+                        this.setup_date_values();
+                        this._preserveLabelState = true;
+                        this.render();
 
-                    let [new_min_start, new_max_start, new_max_end] = this.get_start_end_positions();
-                    let bar_position_change = new_min_start - relative_bar_position;
-                    let new_grid_height = this.grid_height;
-                    let height_difference = new_grid_height - old_grid_height;
-                    container.scrollTop = old_scroll_top + height_difference;
+                        let [new_min_start, new_max_start, new_max_end] =
+                            this.get_start_end_positions();
+                        let bar_position_change =
+                            new_min_start - relative_bar_position;
+                        let new_grid_height = this.grid_height;
+                        let height_difference =
+                            new_grid_height - old_grid_height;
+                        container.scrollTop =
+                            old_scroll_top + height_difference;
 
-                    if (this.label && this.label.$labels_scroll) {
-                        this.label.$labels_scroll.scrollTop = old_label_scroll + height_difference;
+                        if (this.label && this.label.$labels_scroll) {
+                            this.label.$labels_scroll.scrollTop =
+                                old_label_scroll + height_difference;
+                        }
+                        if (Math.abs(bar_position_change) > 0) {
+                            container.scrollLeft += bar_position_change;
+                        }
+                        setTimeout(() => (extended = false), 300);
                     }
-                    if (Math.abs(bar_position_change) > 0) {
-                        container.scrollLeft += bar_position_change;
-                    }
-                    setTimeout(() => (extended = false), 300);
-                }
 
-                if (!extended && atBottom && scrollingDown) {
-                    let old_scroll_top = container.scrollTop;
-                    let old_label_scroll = this.label && this.label.$labels_scroll ? this.label.$labels_scroll.scrollTop : 0;
-                    let [min_start, max_start, max_end] = this.get_start_end_positions();
-                    let relative_bar_position = min_start;
-                    extended = true;
-                    this.gantt_end = date_utils.add(
-                        this.gantt_end,
-                        this.config.extend_by_units,
-                        this.config.unit,
-                    );
-                    this.setup_date_values();
-                    console.log('Setting _preserveLabelState = true for downward scroll');
-                    this._preserveLabelState = true;
-                    this.render();
-                    
-                    let [new_min_start, new_max_start, new_max_end] = this.get_start_end_positions();
-                    let bar_position_change = new_min_start - relative_bar_position;
-                    container.scrollTop = old_scroll_top;
-                    if (this.label && this.label.$labels_scroll) {
-                        this.label.$labels_scroll.scrollTop = old_label_scroll;
+                    if (!extended && atBottom && scrollingDown) {
+                        let old_scroll_top = container.scrollTop;
+                        let old_label_scroll =
+                            this.label && this.label.$labels_scroll
+                                ? this.label.$labels_scroll.scrollTop
+                                : 0;
+                        let [min_start, max_start, max_end] =
+                            this.get_start_end_positions();
+                        let relative_bar_position = min_start;
+                        extended = true;
+                        this.gantt_end = date_utils.add(
+                            this.gantt_end,
+                            this.config.extend_by_units,
+                            this.config.unit,
+                        );
+                        this.setup_date_values();
+                        console.log(
+                            'Setting _preserveLabelState = true for downward scroll',
+                        );
+                        this._preserveLabelState = true;
+                        this.render();
+
+                        let [new_min_start, new_max_start, new_max_end] =
+                            this.get_start_end_positions();
+                        let bar_position_change =
+                            new_min_start - relative_bar_position;
+                        container.scrollTop = old_scroll_top;
+                        if (this.label && this.label.$labels_scroll) {
+                            this.label.$labels_scroll.scrollTop =
+                                old_label_scroll;
+                        }
+                        if (Math.abs(bar_position_change) > 0) {
+                            container.scrollLeft += bar_position_change;
+                        }
+                        setTimeout(() => (extended = false), 300);
                     }
-                    if (Math.abs(bar_position_change) > 0) {
-                        container.scrollLeft += bar_position_change;
-                    }
-                    setTimeout(() => (extended = false), 300);
-                }
-            }, 100));
+                }, 100),
+            );
         }
 
         $.on(this.$container, 'scroll', (e) => {
@@ -1266,7 +1299,7 @@ export default class Gantt {
             this.current_date = date_utils.add(
                 this.gantt_start,
                 (e.currentTarget.scrollLeft / this.config.column_width) *
-                this.config.step,
+                    this.config.step,
                 this.config.unit,
             );
 
@@ -1283,7 +1316,7 @@ export default class Gantt {
                 this.gantt_start,
                 ((e.currentTarget.scrollLeft + $el.clientWidth) /
                     this.config.column_width) *
-                this.config.step,
+                    this.config.step,
                 this.config.unit,
             );
             current_upper = this.config.view_mode.upper_text(
@@ -1629,7 +1662,7 @@ export default class Gantt {
         this.$current_highlight?.remove?.();
         this.$extras?.remove?.();
         this.popup?.hide?.();
-        
+
         // Don't remove label during infinite padding re-renders to preserve state
         if (!this._preserveLabelState) {
             this.label?.remove?.();
