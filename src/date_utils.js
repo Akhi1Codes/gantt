@@ -79,10 +79,9 @@ export default {
     },
 
     format(date, date_format = 'YYYY-MM-DD HH:mm', lang = 'en') {
-        // Defensive check: ensure date_format is a string
         if (typeof date_format !== 'string') {
             console.warn('date_format must be a string, got:', typeof date_format, date_format);
-            date_format = 'YYYY-MM-DD HH:mm'; // fallback to default
+            date_format = 'YYYY-MM-DD HH:mm';
         }
         
         const dateTimeFormat = new Intl.DateTimeFormat(lang, {
@@ -113,7 +112,7 @@ export default {
         const formatted_values = [];
 
         Object.keys(format_map)
-            .sort((a, b) => b.length - a.length) // big string first
+            .sort((a, b) => b.length - a.length)
             .forEach((key) => {
                 if (str.includes(key)) {
                     str = str.replaceAll(key, `$${formatted_values.length}`);

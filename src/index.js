@@ -1505,9 +1505,8 @@ export default class Gantt {
                 dx = $bar_progress.min_dx;
             }
 
-            // Progress bar updates disabled - progress remains constant
-            // $bar_progress.setAttribute('width', $bar_progress.owidth + dx);
-            // $.attr(bar.$handle_progress, 'cx', $bar_progress.getEndX());
+            $bar_progress.setAttribute('width', $bar_progress.owidth + dx);
+            $.attr(bar.$handle_progress, 'cx', $bar_progress.getEndX());
 
             $bar_progress.finaldx = dx;
         });
@@ -1517,8 +1516,7 @@ export default class Gantt {
             if (!($bar_progress && $bar_progress.finaldx)) return;
 
             $bar_progress.finaldx = 0;
-            // Progress change disabled - progress remains constant
-            // bar.progress_changed();
+            bar.progress_changed();
             bar.set_action_completed();
             bar = null;
             $bar_progress = null;
@@ -1668,7 +1666,6 @@ export default class Gantt {
         this.$extras?.remove?.();
         this.popup?.hide?.();
 
-        // Don't remove label during infinite padding re-renders to preserve state
         if (!this._preserveLabelState) {
             this.label?.remove?.();
         }

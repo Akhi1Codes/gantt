@@ -230,7 +230,6 @@ export default class Bar {
             class: 'bar-label',
             append_to: this.bar_group,
         });
-        // labels get BBox in the next tick
         requestAnimationFrame(() => this.update_label_position());
     }
 
@@ -346,12 +345,11 @@ export default class Bar {
         if (this.gantt.options.popup_on === 'click') {
             $.on(this.group, 'mouseup', (e) => {
                 const posX = e.offsetX || e.layerX;
-                // Progress handle click check disabled - progress remains constant
-                // if (this.$handle_progress) {
-                //     const cx = +this.$handle_progress.getAttribute('cx');
-                //     if (cx > posX - 1 && cx < posX + 1) return;
-                //     if (this.gantt.bar_being_dragged) return;
-                // }
+                if (this.$handle_progress) {
+                    const cx = +this.$handle_progress.getAttribute('cx');
+                    if (cx > posX - 1 && cx < posX + 1) return;
+                    if (this.gantt.bar_being_dragged) return;
+                }
                 this.gantt.show_popup({
                     x: e.offsetX || e.layerX,
                     y: e.offsetY || e.layerY,
@@ -390,7 +388,6 @@ export default class Bar {
 
         $.on(this.group, 'dblclick', (e) => {
             if (this.action_completed) {
-                // just finished a move action, wait for a few seconds
                 return;
             }
             this.group.classList.remove('active');
