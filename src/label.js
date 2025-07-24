@@ -46,10 +46,12 @@ export default class Label {
         const $label_header = document.createElement('div');
         $label_header.classList.add('gantt-label-upperheader');
 
-        const $settings_icon = document.createElement('span');
-        $settings_icon.classList.add('gantt-label-settings');
-        $settings_icon.title = 'Only 3 columns can be selected at a time';
-        $settings_icon.innerHTML = `
+        // Only show settings icon if label_filter option is enabled
+        if (this.gantt.options.label_filter) {
+            const $settings_icon = document.createElement('span');
+            $settings_icon.classList.add('gantt-label-settings');
+            $settings_icon.title = 'Only 3 columns can be selected at a time';
+            $settings_icon.innerHTML = `
 <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
      xmlns="http://www.w3.org/2000/svg" stroke="currentColor">
   <line x1="4" y1="21" x2="4" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -63,25 +65,30 @@ export default class Label {
   <circle cx="20" cy="16" r="2" fill="none" stroke="currentColor" stroke-width="2"/>
 </svg>
 `;
-        this.create_settings_dropdown($settings_icon);
-        $settings_icon.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.toggle_settings_dropdown();
-        });
+            this.create_settings_dropdown($settings_icon);
+            $settings_icon.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.toggle_settings_dropdown();
+            });
 
-        $label_header.appendChild($settings_icon);
+            $label_header.appendChild($settings_icon);
+
+            this._clickOutsideHandler = (e) => {
+                if (
+                    this.$settings_dropdown &&
+                    !$settings_icon.contains(e.target) &&
+                    !this.$settings_dropdown.contains(e.target)
+                ) {
+                    this.hide_settings_dropdown();
+                }
+            };
+            document.addEventListener('click', this._clickOutsideHandler);
+        } else {
+            // When label_filter is false, initialize visibleHeaders to show first 2 headers
+            this.visibleHeaders = new Set(this.labelHeaders.slice(0, 2));
+        }
+
         this.$label_field.appendChild($label_header);
-
-        this._clickOutsideHandler = (e) => {
-            if (
-                this.$settings_dropdown &&
-                !$settings_icon.contains(e.target) &&
-                !this.$settings_dropdown.contains(e.target)
-            ) {
-                this.hide_settings_dropdown();
-            }
-        };
-        document.addEventListener('click', this._clickOutsideHandler);
     }
 
     create_settings_dropdown($parent) {
@@ -155,6 +162,8 @@ export default class Label {
     }
 
     toggle_settings_dropdown() {
+        if (!this.$settings_dropdown) return;
+        
         if (this.$settings_dropdown.style.display === 'none') {
             this.show_settings_dropdown();
         } else {
@@ -163,6 +172,8 @@ export default class Label {
     }
 
     show_settings_dropdown() {
+        if (!this.$settings_dropdown) return;
+        
         this.$settings_dropdown.style.display = 'block';
 
         const settingsIcon = this.$settings_dropdown.parentElement;
@@ -175,6 +186,8 @@ export default class Label {
     }
 
     hide_settings_dropdown() {
+        if (!this.$settings_dropdown) return;
+        
         this.$settings_dropdown.style.display = 'none';
 
         this.$settings_dropdown.style.position = '';
@@ -505,6 +518,8 @@ export default class Label {
     }
 
     _enforce_max_three_headers() {
+        if (!this._headerCheckboxes) return;
+        
         const checked = this._headerCheckboxes.filter((cb) => cb.checked);
         if (checked.length >= 3) {
             this._headerCheckboxes.forEach((cb) => {
