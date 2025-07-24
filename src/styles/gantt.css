@@ -7,7 +7,7 @@
     display: flex;
     overflow: hidden;
     border-radius: 8px;
-    border: 1px solid var(--g-border-color);
+    border: 1px solid var(--g-row-border-color);
 
     & .gantt-label-field {
         position: static;
@@ -466,14 +466,14 @@
         -webkit-user-select: none;
         position: absolute;
 
-        & .bar-original-line {
+        & .bar-expected-line {
             stroke:var(--g-original-color);
             stroke-width: 2px;
             stroke-dasharray: 4, 4;
             opacity: 0.8;
         }
         
-        & .bar-original-triangle {
+        & .bar-expected-triangle {
             fill: var(--g-original-color);
             opacity: 0.85;
             stroke: none;

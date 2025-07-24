@@ -96,8 +96,8 @@ export default class Bar {
             this.prepare_expected_progress_values();
             this.draw_expected_progress_bar();
         }
-        if (this.task.original) {
-            this.draw_original_line();
+        if (this.task.expected_start && this.task.expected_end) {
+            this.draw_expected_line();
         }
         this.draw_label();
         this.draw_resize_handles();
@@ -346,11 +346,12 @@ export default class Bar {
         if (this.gantt.options.popup_on === 'click') {
             $.on(this.group, 'mouseup', (e) => {
                 const posX = e.offsetX || e.layerX;
-                if (this.$handle_progress) {
-                    const cx = +this.$handle_progress.getAttribute('cx');
-                    if (cx > posX - 1 && cx < posX + 1) return;
-                    if (this.gantt.bar_being_dragged) return;
-                }
+                // Progress handle click check disabled - progress remains constant
+                // if (this.$handle_progress) {
+                //     const cx = +this.$handle_progress.getAttribute('cx');
+                //     if (cx > posX - 1 && cx < posX + 1) return;
+                //     if (this.gantt.bar_being_dragged) return;
+                // }
                 this.gantt.show_popup({
                     x: e.offsetX || e.layerX,
                     y: e.offsetY || e.layerY,
@@ -408,10 +409,8 @@ export default class Bar {
                 return false;
             }
             e.preventDefault();
-            //action on double tap goes below
 
             if (this.action_completed) {
-                // just finished a move action, wait for a few seconds
                 return;
             }
             this.group.classList.remove('active');
@@ -425,14 +424,14 @@ export default class Bar {
     update_bar_position({ x = null, width = null }) {
         const bar = this.$bar;
 
-        if (this.task.original && x !== null) {
+        if (this.task.expected_start && x !== null) {
             const { column_width, step, unit } = this.gantt.config;
             const gantt_start = this.gantt.gantt_start;
-            const original_start = new Date(this.task.original);
-            const original_x =
-                (date_utils.diff(original_start, gantt_start, unit) / step) *
+            const expected_start = new Date(this.task.expected_start);
+            const expected_x =
+                (date_utils.diff(expected_start, gantt_start, unit) / step) *
                 column_width;
-            if (x < original_x) {
+            if (x < expected_x) {
                 return;
             }
         }
@@ -454,36 +453,6 @@ export default class Bar {
             this.$date_highlight.style.width = width + 'px';
         }
 
-        if (
-            this.task.original &&
-            this.$original_line &&
-            this.$original_triangle_left &&
-            this.$original_triangle_right
-        ) {
-            const { column_width, step, unit } = this.gantt.config;
-            const gantt_start = this.gantt.gantt_start;
-            const y = this.y + this.height + 6;
-            const triangle_size = 6;
-            const triangle_height = 6;
-            const original_start = new Date(this.task.original);
-            const x1 =
-                (date_utils.diff(original_start, gantt_start, unit) / step) *
-                column_width;
-            const x2 = this.x + (width !== null ? width : this.width);
-            this.$original_line.setAttribute('x1', x1);
-            this.$original_line.setAttribute('x2', x2);
-            this.$original_line.setAttribute('y1', y);
-            this.$original_line.setAttribute('y2', y);
-            this.$original_triangle_left.setAttribute(
-                'points',
-                `${x1},${y} ${x1},${y - triangle_height / 2} ${x1 + triangle_size},${y}`,
-            );
-            this.$original_triangle_right.setAttribute(
-                'points',
-                `${x2},${y} ${x2},${y - triangle_height / 2} ${x2 - triangle_size},${y}`,
-            );
-        }
-
         this.update_label_position();
         this.update_handle_position();
         this.date_changed();
@@ -492,8 +461,8 @@ export default class Bar {
         if (this.gantt.options.show_expected_progress) {
             this.update_expected_progressbar_position();
         }
-
-        this.update_progressbar_position();
+        // Progress bar position updates disabled - progress remains constant
+        // this.update_progressbar_position();
         this.update_arrow_position();
     }
 
@@ -782,35 +751,36 @@ export default class Bar {
         }
     }
 
-    draw_original_line() {
+    draw_expected_line() {
         const { column_width, step, unit } = this.gantt.config;
         const gantt_start = this.gantt.gantt_start;
         const y = this.y + this.height + 6;
         const triangle_size = 6;
         const triangle_height = 6;
-        const original_start = new Date(this.task.original);
+        const expected_start = new Date(this.task.expected_start);
+        const expected_end = new Date(this.task.expected_end);
         const x1 =
-            (date_utils.diff(original_start, gantt_start, unit) / step) *
+            (date_utils.diff(expected_start, gantt_start, unit) / step) *
             column_width;
         const x2 =
-            (date_utils.diff(this.task._end, gantt_start, unit) / step) *
+            (date_utils.diff(expected_end, gantt_start, unit) / step) *
             column_width;
-        this.$original_line = createSVG('line', {
+        this.$expected_line = createSVG('line', {
             x1,
             y1: y,
             x2,
             y2: y,
-            class: 'bar-original-line',
+            class: 'bar-expected-line',
             append_to: this.bar_group,
         });
-        this.$original_triangle_left = createSVG('polygon', {
+        this.$expected_triangle_left = createSVG('polygon', {
             points: `${x1},${y} ${x1},${y - triangle_height / 2} ${x1 + triangle_size},${y}`,
-            class: 'bar-original-triangle',
+            class: 'bar-expected-triangle',
             append_to: this.bar_group,
         });
-        this.$original_triangle_right = createSVG('polygon', {
+        this.$expected_triangle_right = createSVG('polygon', {
             points: `${x2},${y} ${x2},${y - triangle_height / 2} ${x2 - triangle_size},${y}`,
-            class: 'bar-original-triangle',
+            class: 'bar-expected-triangle',
             append_to: this.bar_group,
         });
     }

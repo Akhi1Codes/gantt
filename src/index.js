@@ -738,11 +738,12 @@ export default class Gantt {
         const res = this.get_closest_date();
         if (!res) return;
 
-        const [_, el] = res;
+        const [closestDate, el] = res;
         el.classList.add('current-date-highlight');
 
+        const now = new Date();
         const diff_in_units = date_utils.diff(
-            new Date(),
+            now,
             this.gantt_start,
             this.config.unit,
         );
@@ -757,9 +758,11 @@ export default class Gantt {
             classes: 'current-highlight',
             append_to: this.$container,
         });
+        
+        const ballLeft = left - this.$container.scrollLeft - 2.5;
         this.$current_ball_highlight = this.create_el({
             top: this.config.header_height - 6,
-            left: left - 2.5,
+            left: ballLeft,
             width: 6,
             height: 6,
             classes: 'current-ball-highlight',
@@ -1502,8 +1505,9 @@ export default class Gantt {
                 dx = $bar_progress.min_dx;
             }
 
-            $bar_progress.setAttribute('width', $bar_progress.owidth + dx);
-            $.attr(bar.$handle_progress, 'cx', $bar_progress.getEndX());
+            // Progress bar updates disabled - progress remains constant
+            // $bar_progress.setAttribute('width', $bar_progress.owidth + dx);
+            // $.attr(bar.$handle_progress, 'cx', $bar_progress.getEndX());
 
             $bar_progress.finaldx = dx;
         });
@@ -1513,7 +1517,8 @@ export default class Gantt {
             if (!($bar_progress && $bar_progress.finaldx)) return;
 
             $bar_progress.finaldx = 0;
-            bar.progress_changed();
+            // Progress change disabled - progress remains constant
+            // bar.progress_changed();
             bar.set_action_completed();
             bar = null;
             $bar_progress = null;
