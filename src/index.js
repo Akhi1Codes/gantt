@@ -759,7 +759,7 @@ export default class Gantt {
             append_to: this.$container,
         });
         
-        const ballLeft = left - this.$container.scrollLeft - 2.5;
+        const ballLeft = left - 2.5;
         this.$current_ball_highlight = this.create_el({
             top: this.config.header_height - 6,
             left: ballLeft,
