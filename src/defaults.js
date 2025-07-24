@@ -19,6 +19,7 @@ const DEFAULT_VIEW_MODES = [
         step: '1h',
         date_format: 'YYYY-MM-DD HH:',
         lower_text: 'HH',
+        column_width: 80,
         upper_text: (d, ld, lang) =>
             !ld || d.getDate() !== ld.getDate()
                 ? date_utils.format(d, 'D MMMM', lang)
@@ -31,6 +32,7 @@ const DEFAULT_VIEW_MODES = [
         step: '6h',
         date_format: 'YYYY-MM-DD HH:',
         lower_text: 'HH',
+        column_width: 80,
         upper_text: (d, ld, lang) =>
             !ld || d.getDate() !== ld.getDate()
                 ? date_utils.format(d, 'D MMM', lang)
@@ -43,6 +45,7 @@ const DEFAULT_VIEW_MODES = [
         step: '12h',
         date_format: 'YYYY-MM-DD HH:',
         lower_text: 'HH',
+        column_width: 80,
         upper_text: (d, ld, lang) =>
             !ld || d.getDate() !== ld.getDate()
                 ? d.getMonth() !== d.getMonth()

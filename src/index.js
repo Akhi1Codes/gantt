@@ -535,7 +535,7 @@ export default class Gantt {
             $select.addEventListener(
                 'change',
                 function () {
-                    this.change_view_mode($select.value, true);
+                    this.change_view_mode($select.value, false);
                 }.bind(this),
             );
             this.$side_header.appendChild($select);
