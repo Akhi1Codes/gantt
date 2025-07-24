@@ -78,7 +78,13 @@ export default {
         return date_string + (with_time ? ' ' + time_string : '');
     },
 
-    format(date, date_format = 'YYYY-MM-DD HH:mm:ss.SSS', lang = 'en') {
+    format(date, date_format = 'YYYY-MM-DD HH:mm', lang = 'en') {
+        // Defensive check: ensure date_format is a string
+        if (typeof date_format !== 'string') {
+            console.warn('date_format must be a string, got:', typeof date_format, date_format);
+            date_format = 'YYYY-MM-DD HH:mm'; // fallback to default
+        }
+        
         const dateTimeFormat = new Intl.DateTimeFormat(lang, {
             month: 'long',
         });
