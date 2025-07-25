@@ -213,7 +213,12 @@ export default class Label {
         );
 
         if ($existing_header) $existing_header.remove();
-        if ($existing_scroll) $existing_scroll.remove();
+        if ($existing_scroll) {
+            $existing_scroll.remove();
+            if (this.$labels_scroll === $existing_scroll) {
+                this.$labels_scroll = null;
+            }
+        }
 
         this.create_headers_row();
         this.create_values_area();
@@ -299,24 +304,27 @@ export default class Label {
     }
 
     setup_scroll_sync() {
-        // Sync scroll between labels and gantt container
         if (this.$labels_scroll && this.gantt.$container) {
             let isSyncingScroll = false;
 
             this.$labels_scroll.addEventListener('scroll', () => {
-                if (isSyncingScroll) return;
+                if (isSyncingScroll || !this.$labels_scroll) return;
                 isSyncingScroll = true;
                 this.gantt._isSyncingLabelScroll = true;
-                this.gantt.$container.scrollTop = this.$labels_scroll.scrollTop;
+                if (this.$labels_scroll && this.gantt.$container) {
+                    this.gantt.$container.scrollTop = this.$labels_scroll.scrollTop;
+                }
                 this.gantt._isSyncingLabelScroll = false;
                 isSyncingScroll = false;
             });
 
             this.gantt.$container.addEventListener('scroll', () => {
-                if (isSyncingScroll) return;
+                if (isSyncingScroll || !this.$labels_scroll) return;
                 isSyncingScroll = true;
                 this.gantt._isSyncingLabelScroll = true;
-                this.$labels_scroll.scrollTop = this.gantt.$container.scrollTop;
+                if (this.$labels_scroll && this.gantt.$container) {
+                    this.$labels_scroll.scrollTop = this.gantt.$container.scrollTop;
+                }
                 this.gantt._isSyncingLabelScroll = false;
                 isSyncingScroll = false;
             });
@@ -467,6 +475,7 @@ export default class Label {
             this.$label_field.remove();
             this.$label_field = null;
             this.$resize_handle = null;
+            this.$labels_scroll = null;
         }
         if (this._windowResizeHandler) {
             window.removeEventListener('resize', this._windowResizeHandler);

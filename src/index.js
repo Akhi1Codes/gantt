@@ -255,7 +255,6 @@ export default class Gantt {
             this.options.scroll_to = null;
         }
         this.options.view_mode = mode.name;
-        this.config.view_mode = mode;
         this.update_view_scale(mode);
         this.setup_dates(maintain_pos);
         this.render();
@@ -281,19 +280,25 @@ export default class Gantt {
             this.options.upper_header_height +
             10;
 
-        if (!mode.upper_text) {
-            mode.upper_text = () => '';
-        } else if (typeof mode.upper_text === 'string') {
-            mode.upper_text = (date) =>
-                date_utils.format(date, mode.upper_text, this.options.language);
+        let processedMode = { ...mode };
+
+        if (!processedMode.upper_text) {
+            processedMode.upper_text = () => '';
+        } else if (typeof processedMode.upper_text === 'string') {
+            const upperTextFormat = processedMode.upper_text;
+            processedMode.upper_text = (date) =>
+                date_utils.format(date, upperTextFormat, this.options.language);
         }
 
-        if (!mode.lower_text) {
-            mode.lower_text = () => '';
-        } else if (typeof mode.lower_text === 'string') {
-            mode.lower_text = (date) =>
-                date_utils.format(date, mode.lower_text, this.options.language);
+        if (!processedMode.lower_text) {
+            processedMode.lower_text = () => '';
+        } else if (typeof processedMode.lower_text === 'string') {
+            const lowerTextFormat = processedMode.lower_text;
+            processedMode.lower_text = (date) =>
+                date_utils.format(date, lowerTextFormat, this.options.language);
         }
+
+        this.config.view_mode = processedMode;
     }
 
     setup_dates(refresh = false) {
@@ -357,6 +362,10 @@ export default class Gantt {
         }
         this.config.date_format =
             this.config.view_mode.date_format || this.options.date_format;
+        
+        if (typeof this.config.date_format !== 'string') {
+            this.config.date_format = 'YYYY-MM-DD HH:mm';
+        }
         this.gantt_start.setHours(0, 0, 0, 0);
     }
 
