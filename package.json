@@ -1,6 +1,6 @@
 {
-    "name": "frappe-gantt",
-    "version": "1.0.3",
+    "name": "@akhi1codes/frappe-gantt",
+    "version": "2.0.0",
     "description": "A simple, modern, interactive gantt library for the web",
     "main": "src/index.js",
     "type": "module",
@@ -14,7 +14,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/frappe/gantt.git"
+        "url": "git+https://github.com/Akhi1Codes/gantt.git"
     },
     "files": [
         "src",
@@ -39,9 +39,9 @@
     "author": "Faris Ansari",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/frappe/gantt/issues"
+        "url": "https://github.com/Akhi1Codes/gantt/issues"
     },
-    "homepage": "https://github.com/frappe/gantt",
+    "homepage": "https://github.com/Akhi1Codes/gantt",
     "devDependencies": {
         "eslint": "^9.15.0",
         "eslint-config-prettier": "^2.9.0",
