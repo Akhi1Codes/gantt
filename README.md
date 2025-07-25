@@ -1,16 +1,18 @@
-### Clone of Frappe Gantt with additional functionality
+### Enhanced Frappe Gantt with Advanced Label System
 
 <div align="center" markdown="1">
     <img src=".github/gantt-logo.jpg" width="80">
-    <h1>Frappe Gantt</h1>
+    <h1>Frappe Gantt Enhanced</h1>
 
-**A modern, configurable, Gantt library for the web.**
+**A modern, configurable Gantt library with advanced labeling and enhanced UX.**
 </div>
 
 ![Hero Image](.github/hero-image.png)
 
-## Frappe Gantt
-Gantt charts are bar charts that visually illustrate a project's tasks, schedule, and dependencies. With Frappe Gantt, you can build beautiful, customizable, Gantt charts with ease.
+## Frappe Gantt Enhanced
+This is an enhanced version of Frappe Gantt with additional features including a comprehensive label system, improved view mode switching, and enhanced user experience. 
+
+Gantt charts are bar charts that visually illustrate a project's tasks, schedule, and dependencies. With this enhanced Frappe Gantt, you can build beautiful, customizable Gantt charts with advanced labeling capabilities and improved usability.
 
 You can use it anywhere from hobby projects to tracking the goals of your team at the worksplace.
 
@@ -22,10 +24,13 @@ We needed a Gantt View for ERPNext. Surprisingly, we couldn't find a visually ap
 
 
 ### Key Features
+- **Advanced Label System**: Display task metadata in a resizable side panel with dropdown editing and column filtering
+- **Enhanced View Modes**: Improved view mode switching that maintains focus on current date across different time scales
 - **Customizable Views**: customize the timeline based on various time periods - day, hour, or year, you have it. You can also create your own views.
 - **Ignore Periods**: exclude weekends and other holidays from your tasks' progress calculation.
 - **Configure Anything**: spacing, edit access, labels, you can control it all. Change both the style and functionality to meet your needs.
 - **Multi-lingual Support**: suitable for companies with an international base.
+- **Enhanced UX**: Better scrolling behavior, improved accessibility, and more responsive interactions.
 
 ## Usage
 
@@ -91,7 +96,10 @@ Frappe Gantt offers a wide range of options to customize your chart.
 | `readonly`               | Disables all editing features.                                                  | `true`, `false`                                    | `false`                            |
 | `scroll_to`              | Determines the starting point when chart is rendered.                                           | `today`, `start`, `end`, or a date string.  | `today`                          |
 | `show_expected_progress` | Shows expected progress for tasks.                                              | `true`, `false`                                    | `false`                            |
-| `today_button`           | Adds a button to navigate to today’s date.                                      | `true`, `false`                                    | `true`                             |
+| `expected_date_line`     | Shows a vertical line indicating expected completion date.                      | `true`, `false`                                    | `false`                            |
+| `today_button`           | Adds a button to navigate to today's date.                                      | `true`, `false`                                    | `true`                             |
+| `label_button`           | Adds a button to toggle the label panel visibility.                            | `true`, `false`                                    | `false`                            |
+| `label_filter`           | Enables filtering/selection of label columns in the label panel.               | `true`, `false`                                    | `false`                            |
 | `view_mode`              | The initial view mode of the Gantt chart.                                          | `Day`, `Week`, `Month`, `Year`.           | `Day`                            |
 | `view_mode_select`       | Allows selecting the view mode from a dropdown.                                 | `true`, `false`                                    | `false`                            |
 
@@ -127,6 +135,82 @@ The function receives one object as an argument, containing:
 - `get_title`, `get_subtitle`, `get_details` (functions) - get the relevant section as a HTML node.
 - `set_title`, `set_subtitle`, `set_details` (functions) - take in the HTML of the relevant section
 - `add_action` (function) - accepts two parameters, `html` and `func` - respectively determining the HTML of the action and the callback when the action is pressed.
+
+#### Labels Configuration
+The labels feature allows you to display additional task information in a side panel next to the Gantt chart. This is particularly useful for showing task metadata, status, priority, assignees, and other custom fields.
+
+To enable labels, set `label_button: true` in your options and provide a `labels` array containing the label definitions:
+
+```js
+let gantt = new Gantt("#gantt", tasks, {
+    label_button: true,
+    label_filter: true, // Optional: enables column filtering
+    labels: [
+        {
+            'Status': ['Not Started', 'In Progress', 'Completed', 'Blocked'],
+            'Priority': ['Critical', 'High', 'Medium', 'Low'],
+            'Department': ['Engineering', 'Marketing', 'Sales', 'Support'],
+            'Owner': ['Alice', 'Bob', 'Charlie', 'Diana']
+        }
+    ]
+});
+```
+
+Then add the corresponding properties to your task objects:
+
+```js
+let tasks = [
+    {
+        id: '1',
+        name: 'Redesign website',
+        start: '2016-12-28',
+        end: '2016-12-31',
+        progress: 20,
+        Status: 'In Progress',
+        Priority: 'High',
+        Department: 'Engineering',
+        Owner: 'Alice'
+    },
+    // ... more tasks
+];
+```
+
+**Label Options:**
+- `label_button`: Set to `true` to enable the label panel with a toggle button
+- `label_filter`: Set to `true` to enable column filtering (allows users to show/hide up to 3 columns at a time via a dropdown)
+
+**Label Features:**
+- **Resizable Panel**: Users can drag the panel border to resize the label column width
+- **Synchronized Scrolling**: The label panel scrolls vertically in sync with the Gantt chart
+- **Dropdown Editing**: Click on label values to edit them via dropdown menus (populated from your label definitions)
+- **Column Filtering**: When `label_filter: true`, users can select which label columns to display (maximum 3 at a time)
+- **Persistent State**: Label panel visibility and column selections are maintained across chart updates
+
+### Recent Enhancements
+
+This version includes several improvements over the original Frappe Gantt:
+
+**Enhanced View Mode Switching:**
+- When changing view modes (Day → Week → Month → Year), the chart now automatically maintains focus on "today" instead of trying to preserve scroll position
+- This provides better user experience when navigating between different time scales
+
+**Advanced Label System:**
+- Complete label panel with resizable columns
+- Support for dropdown-based label editing with predefined value sets
+- Column filtering with up to 3 visible columns at once
+- Synchronized scrolling between labels and chart
+- Persistent state management across chart updates
+
+**Improved Configuration:**
+- Enhanced `readonly` controls with separate `readonly_dates` and `readonly_progress` options
+- Better handling of view mode configurations with proper text formatting
+- Robust error handling for invalid configurations
+
+**UI/UX Improvements:**
+- More responsive timeline scrolling behavior
+- Enhanced visual feedback for interactive elements
+- Better accessibility for keyboard navigation
+- Improved mobile responsiveness
 
 ### API
 Frappe Gantt exposes a few helpful methods for you to interact with the chart:
