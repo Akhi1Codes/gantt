@@ -36,20 +36,7 @@ We needed a Gantt View for ERPNext. Surprisingly, we couldn't find a visually ap
 
 Install with:
 ```bash
-npm install frappe-gantt
-```
-
-Include it in your HTML:
-
-```html
-<script src="frappe-gantt.umd.js"></script>
-<link rel="stylesheet" href="frappe-gantt.css">
-```
-
-Or from the CDN:
-```html
-<script src="https://cdn.jsdelivr.net/npm/frappe-gantt/dist/frappe-gantt.umd.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/frappe-gantt/dist/frappe-gantt.css">
+npm i @akhi1codes/frappe-gantt
 ```
 
 Start using Gantt:
