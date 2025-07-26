@@ -1,6 +1,6 @@
 {
-    "name": "@akhi1codes/frappe-gantt",
-    "version": "2.0.1",
+    "name": "frappe-gantt-mark1",
+    "version": "2.0.0",
     "description": "A simple, modern, interactive gantt library for the web",
     "main": "src/index.js",
     "type": "module",
@@ -29,6 +29,12 @@
         }
     },
     "keywords": [
+        "gantt chart",
+        "gantt library",
+        "gantt chart library",
+        "frappe gantt",
+        "frappe gantt chart",
+        "frappe gantt library",
         "gantt",
         "svg",
         "simple gantt",
