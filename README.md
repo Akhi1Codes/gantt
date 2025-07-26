@@ -18,11 +18,6 @@ You can use it anywhere from hobby projects to tracking the goals of your team a
 
 [ERPNext](https://erpnext.com/) uses Frappe Gantt.
 
-
-### Motivation
-We needed a Gantt View for ERPNext. Surprisingly, we couldn't find a visually appealing Gantt library that was open source - so we decided to build it. Initially, the design was heavily inspired by Google Gantt and DHTMLX.
-
-
 ### Key Features
 - **Advanced Label System**: Display task metadata in a resizable side panel with dropdown editing and column filtering
 - **Enhanced View Modes**: Improved view mode switching that maintains focus on current date across different time scales
@@ -36,7 +31,7 @@ We needed a Gantt View for ERPNext. Surprisingly, we couldn't find a visually ap
 
 Install with:
 ```bash
-npm i @akhi1codes/frappe-gantt
+npm i frappe-gantt-mark1
 ```
 
 Start using Gantt:
