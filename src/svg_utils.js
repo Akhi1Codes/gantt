@@ -27,8 +27,7 @@ export function animateSVG(svgElement, attr, from, to) {
     if (animatedSvgElement === svgElement) {
         // triggered 2nd time programmatically
         // trigger artificial click event
-        const event = document.createEvent('HTMLEvents');
-        event.initEvent('click', true, true);
+        const event = new Event('click', { bubbles: true, cancelable: true });
         event.eventName = 'click';
         animatedSvgElement.dispatchEvent(event);
     }
