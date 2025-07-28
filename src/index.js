@@ -363,7 +363,7 @@ export default class Gantt {
         }
         this.config.date_format =
             this.config.view_mode.date_format || this.options.date_format;
-        
+
         if (typeof this.config.date_format !== 'string') {
             this.config.date_format = 'YYYY-MM-DD HH:mm';
         }
@@ -769,7 +769,7 @@ export default class Gantt {
             classes: 'current-highlight',
             append_to: this.$container,
         });
-        
+
         const ballLeft = left - 2.5;
         this.$current_ball_highlight = this.create_el({
             top: this.config.header_height - 6,
@@ -1213,6 +1213,8 @@ export default class Gantt {
                 throttle((e) => {
                     if (this._isSyncingLabelScroll) return;
                     const container = e.currentTarget;
+                    if (!container) return;
+
                     const atTop = container.scrollTop <= 5;
                     const atBottom =
                         container.scrollTop + container.clientHeight >=
@@ -1247,8 +1249,11 @@ export default class Gantt {
                         let new_grid_height = this.grid_height;
                         let height_difference =
                             new_grid_height - old_grid_height;
-                        container.scrollTop =
-                            old_scroll_top + height_difference;
+
+                        if (container) {
+                            container.scrollTop =
+                                old_scroll_top + height_difference;
+                        }
 
                         if (this.label && this.label.$labels_scroll) {
                             this.label.$labels_scroll.scrollTop =
@@ -1276,9 +1281,6 @@ export default class Gantt {
                             this.config.unit,
                         );
                         this.setup_date_values();
-                        console.log(
-                            'Setting _preserveLabelState = true for downward scroll',
-                        );
                         this._preserveLabelState = true;
                         this.render();
 
@@ -1286,7 +1288,11 @@ export default class Gantt {
                             this.get_start_end_positions();
                         let bar_position_change =
                             new_min_start - relative_bar_position;
-                        container.scrollTop = old_scroll_top;
+
+                        if (container) {
+                            container.scrollTop = old_scroll_top;
+                        }
+
                         if (this.label && this.label.$labels_scroll) {
                             this.label.$labels_scroll.scrollTop =
                                 old_label_scroll;

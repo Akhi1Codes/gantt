@@ -163,7 +163,7 @@ export default class Label {
 
     toggle_settings_dropdown() {
         if (!this.$settings_dropdown) return;
-        
+
         if (this.$settings_dropdown.style.display === 'none') {
             this.show_settings_dropdown();
         } else {
@@ -173,7 +173,7 @@ export default class Label {
 
     show_settings_dropdown() {
         if (!this.$settings_dropdown) return;
-        
+
         this.$settings_dropdown.style.display = 'block';
 
         const settingsIcon = this.$settings_dropdown.parentElement;
@@ -187,7 +187,7 @@ export default class Label {
 
     hide_settings_dropdown() {
         if (!this.$settings_dropdown) return;
-        
+
         this.$settings_dropdown.style.display = 'none';
 
         this.$settings_dropdown.style.position = '';
@@ -267,7 +267,8 @@ export default class Label {
         $labels_content.style.display = 'flex';
         $labels_content.style.width = '100%';
 
-        const contentHeight = this.gantt.grid_height - this.gantt.config.header_height;
+        const contentHeight =
+            this.gantt.grid_height - this.gantt.config.header_height;
         $labels_content.style.height = contentHeight + 'px';
 
         if (this.labelHeaders && this.labelHeaders.length > 0) {
@@ -307,26 +308,48 @@ export default class Label {
     }
 
     setup_scroll_sync() {
-        if (this.$labels_scroll && this.gantt.$container) {
+        if (this.$labels_scroll && this.gantt && this.gantt.$container) {
             let isSyncingScroll = false;
 
             this.$labels_scroll.addEventListener('scroll', () => {
-                if (isSyncingScroll || !this.$labels_scroll) return;
+                if (
+                    isSyncingScroll ||
+                    !this.$labels_scroll ||
+                    !this.gantt ||
+                    !this.gantt.$container
+                )
+                    return;
                 isSyncingScroll = true;
                 this.gantt._isSyncingLabelScroll = true;
-                if (this.$labels_scroll && this.gantt.$container) {
-                    this.gantt.$container.scrollTop = this.$labels_scroll.scrollTop;
+                if (
+                    this.$labels_scroll &&
+                    this.gantt &&
+                    this.gantt.$container
+                ) {
+                    this.gantt.$container.scrollTop =
+                        this.$labels_scroll.scrollTop;
                 }
                 this.gantt._isSyncingLabelScroll = false;
                 isSyncingScroll = false;
             });
 
             this.gantt.$container.addEventListener('scroll', () => {
-                if (isSyncingScroll || !this.$labels_scroll) return;
+                if (
+                    isSyncingScroll ||
+                    !this.$labels_scroll ||
+                    !this.gantt ||
+                    !this.gantt.$container
+                )
+                    return;
                 isSyncingScroll = true;
                 this.gantt._isSyncingLabelScroll = true;
-                if (this.$labels_scroll && this.gantt.$container) {
-                    this.$labels_scroll.scrollTop = this.gantt.$container.scrollTop;
+                if (
+                    this.$labels_scroll &&
+                    this.gantt &&
+                    this.gantt.$container
+                ) {
+                    this.$labels_scroll.scrollTop =
+                        this.gantt.$container.scrollTop;
                 }
                 this.gantt._isSyncingLabelScroll = false;
                 isSyncingScroll = false;
@@ -424,10 +447,6 @@ export default class Label {
 
             if (state.visibleHeaders) {
                 this.visibleHeaders = new Set(state.visibleHeaders);
-                console.log(
-                    'Restored visibleHeaders:',
-                    Array.from(this.visibleHeaders),
-                );
             }
 
             if (state.isVisible) {
@@ -531,7 +550,7 @@ export default class Label {
 
     _enforce_max_three_headers() {
         if (!this._headerCheckboxes) return;
-        
+
         const checked = this._headerCheckboxes.filter((cb) => cb.checked);
         if (checked.length >= 3) {
             this._headerCheckboxes.forEach((cb) => {

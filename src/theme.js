@@ -15,7 +15,7 @@ export default class Theme {
             classes: 'theme-icon',
             append_to: this.gantt.$side_header,
         });
-        
+
         this.$theme_icon.onclick = this.toggle_theme.bind(this);
     }
 
@@ -24,18 +24,22 @@ export default class Theme {
         const currentIndex = themes.indexOf(this.current_theme);
         const nextIndex = (currentIndex + 1) % themes.length;
         this.current_theme = themes[nextIndex];
-        
+
         localStorage.setItem('gantt-theme', this.current_theme);
         this.apply_theme(this.current_theme);
     }
 
     apply_theme(theme) {
         // Remove existing theme classes
-        this.gantt.$main_container.classList.remove('theme-light', 'theme-dark', 'theme-auto');
-        
+        this.gantt.$main_container.classList.remove(
+            'theme-light',
+            'theme-dark',
+            'theme-auto',
+        );
+
         // Apply the new theme class
         this.gantt.$main_container.classList.add(`theme-${theme}`);
-        
+
         // Update button icon and title
         this.update_theme_button(theme);
     }
@@ -59,16 +63,16 @@ export default class Theme {
                     </svg>`,
             dark: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                   </svg>`
+                   </svg>`,
         };
 
         const titles = {
             auto: 'Theme: Auto (click for Light)',
-            light: 'Theme: Light (click for Dark)', 
-            dark: 'Theme: Dark (click for Auto)'
+            light: 'Theme: Light (click for Dark)',
+            dark: 'Theme: Dark (click for Auto)',
         };
 
         this.$theme_icon.innerHTML = icons[theme];
         this.$theme_icon.title = titles[theme];
     }
-} 
+}

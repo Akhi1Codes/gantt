@@ -80,10 +80,14 @@ export default {
 
     format(date, date_format = 'YYYY-MM-DD HH:mm', lang = 'en') {
         if (typeof date_format !== 'string') {
-            console.warn('date_format must be a string, got:', typeof date_format, date_format);
+            console.warn(
+                'date_format must be a string, got:',
+                typeof date_format,
+                date_format,
+            );
             date_format = 'YYYY-MM-DD HH:mm';
         }
-        
+
         const dateTimeFormat = new Intl.DateTimeFormat(lang, {
             month: 'long',
         });

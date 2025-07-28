@@ -96,7 +96,11 @@ export default class Bar {
             this.prepare_expected_progress_values();
             this.draw_expected_progress_bar();
         }
-        if (this.task.expected_start && this.task.expected_end && this.gantt.options.expected_date_line) {
+        if (
+            this.task.expected_start &&
+            this.task.expected_end &&
+            this.gantt.options.expected_date_line
+        ) {
             this.draw_expected_line();
         }
         this.draw_label();
