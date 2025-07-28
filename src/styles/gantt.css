@@ -397,6 +397,22 @@
             outline: none;
         }
 
+        & .theme-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0px;
+            cursor: pointer;
+            background: none !important;
+            border: none !important;
+
+            & svg {
+                stroke-width: 2;
+                background: none !important;
+                padding: 0 5px;
+            }
+        }
+
         & .date-range-highlight {
             background-color: var(--g-progress-color);
             border-radius: 12px;

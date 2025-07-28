@@ -20,6 +20,7 @@ You can use it anywhere from hobby projects to tracking the goals of your team a
 
 ### Key Features
 - **Advanced Label System**: Display task metadata in a resizable side panel column filtering.
+- **Theme Toggle**: Built-in theme switcher with Auto, Light, and Dark modes that respects system preferences.
 - **Enhanced View Modes**: Improved view mode switching that maintains focus on current date across different time scales
 - **Customizable Views**: customize the timeline based on various time periods - day, hour, or year, you have it. You can also create your own views.
 - **Ignore Periods**: exclude weekends and other holidays from your tasks' progress calculation.
@@ -85,7 +86,7 @@ Frappe Gantt offers a wide range of options to customize your chart.
 | `view_mode`              | The initial view mode of the Gantt chart.                                          | `Day`, `Week`, `Month`, `Year`.           | `Day`                            |
 | `view_mode_select`       | Allows selecting the view mode from a dropdown.                                 | `true`, `false`                                    | `false`                            |
 
-Apart from these ones, two options - `popup` and `view_modes` (plural, not singular) - are available. They have "sub"-APIs, and thus are listed separately.
+Apart from these ones, three options - `popup`,`view_modes` and `labels` (plural, not singular) - are available. They have "sub"-APIs, and thus are listed separately.
 
 #### View Mode Configuration
 The `view_modes` option determines all the available view modes for the chart. It should be an array of objects.
@@ -149,6 +150,16 @@ Their values (from each task) show up aligned with that column
 - **Column Filtering**: When `label_filter: true`, users can select which label columns to display (maximum 3 at a time)
 - **Persistent State**: Label panel visibility and column selections are maintained across chart updates
 
+#### Theme Configuration
+The Gantt chart includes a built-in theme toggle that allows users to switch between different visual themes. The theme toggle appears as an icon in the header and cycles through three modes:
+
+**Theme Modes:**
+- **Auto** (🌗): Automatically follows the user's system/browser color scheme preference (`prefers-color-scheme`)
+- **Light** (☀️): Forces light theme regardless of system preference
+- **Dark** (🌙): Forces dark theme regardless of system preference
+
+The theme system automatically applies appropriate colors for all chart elements including bars, grid lines, text, backgrounds, and interactive elements.
+
 ### Recent Enhancements
 
 This version includes several improvements over the original Frappe Gantt:
@@ -159,7 +170,6 @@ This version includes several improvements over the original Frappe Gantt:
 
 **Advanced Label System:**
 - Complete label panel with resizable columns
-- Support for dropdown-based label editing with predefined value sets
 - Column filtering with up to 3 visible columns at once
 - Synchronized scrolling between labels and chart
 - Persistent state management across chart updates
@@ -168,6 +178,11 @@ This version includes several improvements over the original Frappe Gantt:
 - Enhanced `readonly` controls with separate `readonly_dates` and `readonly_progress` options
 - Better handling of view mode configurations with proper text formatting
 - Robust error handling for invalid configurations
+
+**Theme System:**
+- Built-in theme toggle with Auto, Light, and Dark modes
+- Automatic system preference detection and support
+- Comprehensive color scheme coverage for all chart elements
 
 **UI/UX Improvements:**
 - More responsive timeline scrolling behavior

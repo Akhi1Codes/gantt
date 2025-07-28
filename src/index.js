@@ -5,6 +5,7 @@ import Arrow from './arrow';
 import Bar from './bar';
 import Popup from './popup';
 import Label from './label';
+import Theme from './theme';
 
 import { DEFAULT_OPTIONS, DEFAULT_VIEW_MODES } from './defaults';
 
@@ -574,6 +575,7 @@ export default class Gantt {
                 this.label.show();
             }
         }
+        this.theme = new Theme(this);
     }
 
     make_side_bar() {
