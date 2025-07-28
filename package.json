@@ -1,6 +1,6 @@
 {
     "name": "frappe-gantt-mark1",
-    "version": "2.1.0",
+    "version": "2.1.1",
     "description": "A simple, modern, interactive gantt library for the web",
     "main": "src/index.js",
     "type": "module",
