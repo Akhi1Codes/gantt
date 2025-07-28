@@ -267,6 +267,9 @@ export default class Label {
         $labels_content.style.display = 'flex';
         $labels_content.style.width = '100%';
 
+        const contentHeight = this.gantt.grid_height - this.gantt.config.header_height;
+        $labels_content.style.height = contentHeight + 'px';
+
         if (this.labelHeaders && this.labelHeaders.length > 0) {
             this.labelHeaders.forEach((header, colIdx) => {
                 if (this.visibleHeaders && this.visibleHeaders.has(header)) {

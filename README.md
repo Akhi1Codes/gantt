@@ -19,7 +19,7 @@ You can use it anywhere from hobby projects to tracking the goals of your team a
 [ERPNext](https://erpnext.com/) uses Frappe Gantt.
 
 ### Key Features
-- **Advanced Label System**: Display task metadata in a resizable side panel with dropdown editing and column filtering
+- **Advanced Label System**: Display task metadata in a resizable side panel column filtering.
 - **Enhanced View Modes**: Improved view mode switching that maintains focus on current date across different time scales
 - **Customizable Views**: customize the timeline based on various time periods - day, hour, or year, you have it. You can also create your own views.
 - **Ignore Periods**: exclude weekends and other holidays from your tasks' progress calculation.
@@ -128,34 +128,16 @@ let gantt = new Gantt("#gantt", tasks, {
     label_button: true,
     label_filter: true, // Optional: enables column filtering
     labels: [
-        {
-            'Status': ['Not Started', 'In Progress', 'Completed', 'Blocked'],
-            'Priority': ['Critical', 'High', 'Medium', 'Low'],
-            'Department': ['Engineering', 'Marketing', 'Sales', 'Support'],
-            'Owner': ['Alice', 'Bob', 'Charlie', 'Diana']
-        }
-    ]
+  {
+    'Status': [...],
+    'Priority': [...],
+    ...
+  }
+]
 });
 ```
-
-Then add the corresponding properties to your task objects:
-
-```js
-let tasks = [
-    {
-        id: '1',
-        name: 'Redesign website',
-        start: '2016-12-28',
-        end: '2016-12-31',
-        progress: 20,
-        Status: 'In Progress',
-        Priority: 'High',
-        Department: 'Engineering',
-        Owner: 'Alice'
-    },
-    // ... more tasks
-];
-```
+Each label (like status, priority, etc.) becomes a column
+Their values (from each task) show up aligned with that column
 
 **Label Options:**
 - `label_button`: Set to `true` to enable the label panel with a toggle button
@@ -164,7 +146,6 @@ let tasks = [
 **Label Features:**
 - **Resizable Panel**: Users can drag the panel border to resize the label column width
 - **Synchronized Scrolling**: The label panel scrolls vertically in sync with the Gantt chart
-- **Dropdown Editing**: Click on label values to edit them via dropdown menus (populated from your label definitions)
 - **Column Filtering**: When `label_filter: true`, users can select which label columns to display (maximum 3 at a time)
 - **Persistent State**: Label panel visibility and column selections are maintained across chart updates
 
