@@ -212,6 +212,11 @@ export default class Label {
             '.gantt-labels-scroll',
         );
 
+        let savedScrollTop = 0;
+        if ($existing_scroll) {
+            savedScrollTop = $existing_scroll.scrollTop;
+        }
+
         if ($existing_header) $existing_header.remove();
         if ($existing_scroll) {
             $existing_scroll.remove();
@@ -223,6 +228,17 @@ export default class Label {
         this.create_headers_row();
         this.create_values_area();
         this.setup_scroll_sync();
+        
+        if (savedScrollTop > 0) {
+            requestAnimationFrame(() => {
+                if (this.$labels_scroll) {
+                    this.$labels_scroll.scrollTop = savedScrollTop;
+                    if (this.gantt && this.gantt.$container) {
+                        this.gantt.$container.scrollTop = savedScrollTop;
+                    }
+                }
+            });
+        }
 
         if (
             !this.$resize_handle ||
