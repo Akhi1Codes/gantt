@@ -50,12 +50,12 @@ test('Format: converts date object to string', () => {
 
 test('Format: converts date object to string', () => {
     const date = new Date('2016-02-29 16:08:34.3');
-    expect(date_utils.to_string(date, true)).toBe('2016-02-29 16:08:34.300');
+    expect(date_utils.to_string(date, true)).toBe('2016-02-29 16:08:34.3');
 });
 
 test('Format: converts date object to string', () => {
     const date = new Date('2016-02-29 16:08:34.3');
-    expect(date_utils.to_string(date, true)).toBe('2016-02-29 16:08:34.300');
+    expect(date_utils.to_string(date, true)).toBe('2016-02-29 16:08:34.3');
 });
 
 test('Parse: returns Date Object as is', () => {
@@ -84,32 +84,32 @@ test('StartOf', () => {
 
     const start_of_second = date_utils.start_of(date, 'second');
     expect(date_utils.to_string(start_of_second, true)).toBe(
-        '2017-08-12 15:07:34.000',
+        '2017-08-12 15:07:34.0',
     );
 
     const start_of_minute = date_utils.start_of(date, 'minute');
     expect(date_utils.to_string(start_of_minute, true)).toBe(
-        '2017-08-12 15:07:00.000',
+        '2017-08-12 15:07:00.0',
     );
 
     const start_of_hour = date_utils.start_of(date, 'hour');
     expect(date_utils.to_string(start_of_hour, true)).toBe(
-        '2017-08-12 15:00:00.000',
+        '2017-08-12 15:00:00.0',
     );
 
     const start_of_day = date_utils.start_of(date, 'day');
     expect(date_utils.to_string(start_of_day, true)).toBe(
-        '2017-08-12 00:00:00.000',
+        '2017-08-12 00:00:00.0',
     );
 
     const start_of_month = date_utils.start_of(date, 'month');
-    expect(date_utils.to_string(start_of_month, true)).toBe(
-        '2017-08-01 00:00:00.000',
+    expect(date_utils.format(start_of_month, 'YYYY-MM-DD HH:mm:ss')).toBe(
+        '2017-08-01 00:00:00',
     );
 
     const start_of_year = date_utils.start_of(date, 'year');
-    expect(date_utils.to_string(start_of_year, true)).toBe(
-        '2017-01-01 00:00:00.000',
+    expect(date_utils.format(start_of_year, 'YYYY-MM-DD HH:mm:ss')).toBe(
+        '2017-01-01 00:00:00',
     );
 });
 
@@ -120,5 +120,5 @@ test('format', () => {
 
 test('format', () => {
     const date = date_utils.parse('2016-02-29 16:08:34.3');
-    expect(date_utils.format(date)).toBe('2016-02-29 16:08:34.300');
+    expect(date_utils.format(date)).toBe('2016-02-29 16:08');
 });

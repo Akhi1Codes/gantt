@@ -67,7 +67,8 @@ export default {
             }
 
             if (i === 6) {
-                return padStart(val + '', 3, '0');
+                // Pad to 3 digits then remove trailing zeros
+                return padStart(val + '', 3, '0').replace(/0+$/, '') || '0';
             }
 
             return padStart(val + '', 2, '0');
@@ -145,8 +146,6 @@ export default {
         // Calculate months across years
         let yearDiff = date_a.getFullYear() - date_b.getFullYear();
         let monthDiff = date_a.getMonth() - date_b.getMonth();
-        // calculate extra
-        monthDiff += (days % 30) / 30;
 
         /* If monthDiff is negative, date_b is in an earlier month than
         date_a and thus subtracted from the year difference in months */
@@ -157,8 +156,12 @@ export default {
             months--;
         }
 
-        // Calculate years based on actual months
-        years = months / 12;
+        // Calculate years based on actual year difference
+        years = yearDiff;
+        // Add fractional years only if crossing year boundaries significantly
+        if (Math.abs(yearDiff) > 0) {
+            years += monthDiff / 12;
+        }
 
         if (!scale.endsWith('s')) {
             scale += 's';
