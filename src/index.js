@@ -450,15 +450,26 @@ export default class Gantt {
 
     make_grid_background() {
         const grid_width = this.dates.length * this.config.column_width;
+        
+        // Calculate the minimum height needed for tasks
+        const task_based_height = this.config.header_height +
+            this.options.padding +
+            (this.options.bar_height + this.options.padding) *
+                this.tasks.length -
+            10;
+        
+        let container_height_fallback = 0;
+        if (this.options.container_height === 'auto') {
+            // Get the actual container height when auto is set
+            const containerRect = this.$container.getBoundingClientRect();
+            container_height_fallback = containerRect.height > 0 ? containerRect.height : 0;
+        }
+        
         const grid_height = Math.max(
-            this.config.header_height +
-                this.options.padding +
-                (this.options.bar_height + this.options.padding) *
-                    this.tasks.length -
-                10,
+            task_based_height,
             this.options.container_height !== 'auto'
                 ? this.options.container_height
-                : 0,
+                : container_height_fallback,
         );
 
         createSVG('rect', {
