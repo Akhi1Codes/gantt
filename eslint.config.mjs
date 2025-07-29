@@ -13,7 +13,7 @@ const compat = new FlatCompat({
 
 export default [...compat.extends("plugin:prettier/recommended"), {
     languageOptions: {
-        ecmaVersion: 6,
+        ecmaVersion: "latest",
         sourceType: "module",
     },
 }];

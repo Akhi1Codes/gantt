@@ -773,15 +773,5 @@ export default class Bar {
             class: 'bar-expected-line',
             append_to: this.bar_group,
         });
-        this.$expected_triangle_left = createSVG('polygon', {
-            points: `${x1},${y} ${x1},${y - triangle_height / 2} ${x1 + triangle_size},${y}`,
-            class: 'bar-expected-triangle',
-            append_to: this.bar_group,
-        });
-        this.$expected_triangle_right = createSVG('polygon', {
-            points: `${x2},${y} ${x2},${y - triangle_height / 2} ${x2 - triangle_size},${y}`,
-            class: 'bar-expected-triangle',
-            append_to: this.bar_group,
-        });
     }
 }

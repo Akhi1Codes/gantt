@@ -228,7 +228,7 @@ export default class Label {
         this.create_headers_row();
         this.create_values_area();
         this.setup_scroll_sync();
-        
+
         if (savedScrollTop > 0) {
             requestAnimationFrame(() => {
                 if (this.$labels_scroll) {

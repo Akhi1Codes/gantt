@@ -1,22 +1,14 @@
-### Enhanced Frappe Gantt with Advanced Label System
-
-<div align="center" markdown="1">
-    <img src=".github/gantt-logo.jpg" width="80">
-    <h1>Frappe Gantt Enhanced</h1>
-
-**A modern, configurable Gantt library with advanced labeling and enhanced UX.**
+**A lightweight, modern, and interactive Gantt chart library for building project timelines on the web.**
 </div>
 
 ![Hero Image](.github/hero-image.png)
 
-## Frappe Gantt Enhanced
-This is an enhanced version of Frappe Gantt with additional features including a comprehensive label system, improved view mode switching, and enhanced user experience. 
+## Advanced Gantt Chart
+This is an enhanced Gantt chart library with additional features including a comprehensive label system, improved view mode switching, and enhanced user experience. 
 
-Gantt charts are bar charts that visually illustrate a project's tasks, schedule, and dependencies. With this enhanced Frappe Gantt, you can build beautiful, customizable Gantt charts with advanced labeling capabilities and improved usability.
+Gantt charts are bar charts that visually illustrate a project's tasks, schedule, and dependencies. With this enhanced Gantt library, you can build beautiful, customizable Gantt charts with advanced labeling capabilities and improved usability.
 
 You can use it anywhere from hobby projects to tracking the goals of your team at the worksplace.
-
-[ERPNext](https://erpnext.com/) uses Frappe Gantt.
 
 ### Key Features
 - **Advanced Label System**: Display task metadata in a resizable side panel column filtering.
@@ -32,7 +24,7 @@ You can use it anywhere from hobby projects to tracking the goals of your team a
 
 Install with:
 ```bash
-npm i frappe-gantt-mark1
+npm i ganttflow
 ```
 
 Start using Gantt:
@@ -43,6 +35,8 @@ let tasks = [
     name: 'Redesign website',
     start: '2016-12-28',
     end: '2016-12-31',
+    expected_start: '2016-12-24',
+    expected_end: '2016-12-31',
     progress: 20
   },
   ...
@@ -51,7 +45,7 @@ let gantt = new Gantt("#gantt", tasks);
 ```
 
 ### Configuration
-Frappe Gantt offers a wide range of options to customize your chart.
+The Enhanced Gantt Chart offers a wide range of options to customize your chart.
 
 
 | **Option**               | **Description**                                                                 | **Possible Values**                                 | **Default**                        |
@@ -160,46 +154,6 @@ The Gantt chart includes a built-in theme toggle that allows users to switch bet
 
 The theme system automatically applies appropriate colors for all chart elements including bars, grid lines, text, backgrounds, and interactive elements.
 
-### Recent Enhancements
-
-This version includes several improvements over the original Frappe Gantt:
-
-**Enhanced View Mode Switching:**
-- When changing view modes (Day → Week → Month → Year), the chart now automatically maintains focus on "today" instead of trying to preserve scroll position
-- This provides better user experience when navigating between different time scales
-
-**Advanced Label System:**
-- Complete label panel with resizable columns
-- Column filtering with up to 3 visible columns at once
-- Synchronized scrolling between labels and chart
-- Persistent state management across chart updates
-
-**Improved Configuration:**
-- Enhanced `readonly` controls with separate `readonly_dates` and `readonly_progress` options
-- Better handling of view mode configurations with proper text formatting
-- Robust error handling for invalid configurations
-
-**Theme System:**
-- Built-in theme toggle with Auto, Light, and Dark modes
-- Automatic system preference detection and support
-- Comprehensive color scheme coverage for all chart elements
-
-**UI/UX Improvements:**
-- More responsive timeline scrolling behavior
-- Enhanced visual feedback for interactive elements
-- Better accessibility for keyboard navigation
-- Improved mobile responsiveness
-
-### API
-Frappe Gantt exposes a few helpful methods for you to interact with the chart:
-
-| **Name**               | **Description**                                                                 | **Parameters**                            |
-|---------------------------|---------------------------------------------------------------------------------|------------------------------------------|
-| `.update_options` | Re-renders the chart after updating specific options. | `new_options` - object containing new options. |
-| `.change_view_mode` | Updates the view mode. | `view_mode` - Name of view mode _or_ view mode object (see above) and `maintain_pos` - whether to go back to current scroll position after rerendering, defaults to `false`. |
-| `.scroll_current` | Scrolls to the current date | No parameters. |
-| `.update_task` | Re-renders a specific task bar alone | `task_id` - id of task and `new_details` - object containing the task properties to be updated. |
-
 ## Development Setup
 If you want to contribute enhancements or fixes:
 
@@ -210,13 +164,3 @@ If you want to contribute enhancements or fixes:
 5. Open `index.html` in your browser.
 6. Make your code changes and test them.
 
-<br />
-<br />
-<div align="center" style="padding-top: 0.75rem;">
-	<a href="https://frappe.io" target="_blank">
-		<picture>
-			<source media="(prefers-color-scheme: dark)" srcset="https://frappe.io/files/Frappe-white.png">
-			<img src="https://frappe.io/files/Frappe-black.png" alt="Frappe Technologies" height="28"/>
-		</picture>
-	</a>
-</div>

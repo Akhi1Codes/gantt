@@ -485,14 +485,8 @@
         & .bar-expected-line {
             stroke:var(--g-original-color);
             stroke-width: 2px;
-            stroke-dasharray: 4, 4;
             opacity: 0.8;
-        }
-        
-        & .bar-expected-triangle {
-            fill: var(--g-original-color);
-            opacity: 0.85;
-            stroke: none;
+            border-radius: 2px;
         }
 
         & .grid-background {

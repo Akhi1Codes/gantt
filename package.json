@@ -1,7 +1,7 @@
 {
-    "name": "frappe-gantt-mark1",
-    "version": "2.1.2",
-    "description": "A simple, modern, interactive gantt library for the web",
+    "name": "ganttflow",
+    "version": "1.0.0",
+    "description": "A lightweight, modern, and interactive Gantt chart library for building project timelines on the web.",
     "main": "src/index.js",
     "type": "module",
     "scripts": {
@@ -23,18 +23,15 @@
     ],
     "exports": {
         ".": {
-            "require": "./dist/frappe-gantt.umd.js",
-            "import": "./dist/frappe-gantt.es.js",
-            "style": "./dist/frappe-gantt.css"
-        }
+            "require": "./dist/gantt.umd.js",
+            "import": "./dist/gantt.es.js"
+        },
+        "./style": "./dist/gantt.css"
     },
     "keywords": [
         "gantt chart",
         "gantt library",
         "gantt chart library",
-        "frappe gantt",
-        "frappe gantt chart",
-        "frappe gantt library",
         "gantt",
         "svg",
         "simple gantt",
@@ -42,19 +39,19 @@
         "interactive gantt",
         "project management"
     ],
-    "author": "Faris Ansari",
+    "author": "Akhil Reddy N V",
     "license": "MIT",
     "bugs": {
         "url": "https://github.com/Akhi1Codes/gantt/issues"
     },
     "homepage": "https://github.com/Akhi1Codes/gantt",
     "devDependencies": {
-        "eslint": "^9.15.0",
-        "eslint-config-prettier": "^2.9.0",
-        "eslint-plugin-prettier": "^2.6.0",
-        "postcss-nesting": "^12.1.2",
-        "prettier": "3.2.5",
-        "vite": "^5.2.10"
+        "eslint": "^9.32.0",
+        "eslint-config-prettier": "^8.10.0",
+        "eslint-plugin-prettier": "^5.5.3",
+        "postcss-nesting": "^13.0.1",
+        "prettier": "^3.2.5",
+        "vite": "^6.3.2"
     },
     "eslintIgnore": [
         "dist"
