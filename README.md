@@ -3,6 +3,8 @@
 
 ![Hero Image](.github/hero-image.png)
 
+[![](https://data.jsdelivr.com/v1/package/npm/ganttflow/badge?style=rounded)](https://www.jsdelivr.com/package/npm/ganttflow)
+
 ## Advanced Gantt Chart
 This is an enhanced Gantt chart library with additional features including a comprehensive label system, improved view mode switching, and enhanced user experience. 
 
@@ -25,6 +27,12 @@ You can use it anywhere from hobby projects to tracking the goals of your team a
 Install with:
 ```bash
 npm i ganttflow
+```
+
+Or from the CDN:
+```html
+<script src="https://cdn.jsdelivr.net/npm/ganttflow/dist/gantt.umd.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ganttflow/dist/gantt.css">
 ```
 
 Start using Gantt:
