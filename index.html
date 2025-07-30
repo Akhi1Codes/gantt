@@ -4,9 +4,11 @@
 <head>
     <meta charset="UTF-8" />
     <title>GanttFlow</title>
+    <meta name="description" content="GanttFlow - Interactive and customizable Gantt chart for project management." />
     <link rel="stylesheet" href="dist/gantt.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+
     <style>
         .container {
             display: flex;
@@ -34,236 +36,105 @@
             font-size: 0.775em;
         }
     </style>
-    <script src="dist/gantt.umd.js"></script>
+    <script src="dist/gantt.umd.js" defer></script>
 </head>
 
 <body>
     <div class="container">
-        <h1 class="text-center pt-3 pb-2 font-serif">GanttFlow Chart</h1>
-        <div class="chart-wrapper">
-            <div class="chart " id="mutability"></div>
+        <h1 class="text-center pt-3 pb-2 font-serif">GanttFlow Chart Example</h1>
+
+        <!-- GitHub and npm links -->
+        <div class="text-center mb-3">
+            <a href="https://github.com/Akhi1Codes/gantt" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary me-2" aria-label="GitHub repository">
+                GitHub
+            </a>
+            <a href="https://www.npmjs.com/package/ganttflow" target="_blank" rel="noopener noreferrer" class="btn btn-outline-success" aria-label="npm package">
+                npm
+            </a>
+        </div>
+
+        <div class="chart-wrapper" aria-label="Gantt chart">
+            <div class="chart" id="mutability" role="region" aria-live="polite" aria-atomic="true"></div>
         </div>
     </div>
-    <script type="module">
-        const rawToday = new Date();
-        const today =
-            Date.UTC(
-                rawToday.getFullYear(),
-                rawToday.getMonth(),
-                rawToday.getDate(),
-            ) +
-            new Date().getTimezoneOffset() * 60000;
 
-        function random(begin = 10, end = 90, multiple = 10) {
-            let k;
-            do {
-                k = Math.floor(Math.random() * 100);
-            } while (k < begin || k > end || k % multiple !== 0);
-            return k;
-        }
+    <script type="module" defer>
+        document.addEventListener('DOMContentLoaded', () => {
+            const rawToday = new Date();
+            const today =
+                Date.UTC(
+                    rawToday.getFullYear(),
+                    rawToday.getMonth(),
+                    rawToday.getDate(),
+                ) +
+                new Date().getTimezoneOffset() * 60000;
 
-        const daysSince = (dx) => new Date(today + dx * 86400000);
-        let tasks = [
-            {
-                expected_start: daysSince(-16),
-                expected_end: daysSince(-12),
-                start: daysSince(-15),
-                end: daysSince(-12),
-                name: 'Project kickoff & stakeholder meeting',
-                id: 'Task 0',
-                progress: random(90, 100),
-            },
-            {
-                expected_start: daysSince(-12),
-                expected_end: daysSince(-5),
-                start: daysSince(-11),
-                end: daysSince(-7),
-                name: 'Requirements gathering & site audit',
-                id: 'Task 1',
-                progress: random(80, 100),
-                dependencies: 'Task 0',
-            },
-            {
-                expected_start: daysSince(-10),
-                expected_end: daysSince(-3),
-                start: daysSince(-6),
-                duration: '3d',
-                name: 'Market & competitor analysis',
-                id: 'Task 2',
-                progress: random(70, 100),
-                dependencies: 'Task 1',
-            },
-            {
-                expected_start: daysSince(-5),
-                expected_end: daysSince(1),
-                start: daysSince(-3),
-                duration: '4d',
-                name: 'Create wireframes',
-                id: 'Task 3',
-                progress: random(60, 80),
-                dependencies: 'Task 2',
-            },
-            {
-                start: daysSince(2),
-                duration: '4d',
-                name: 'Design UI mockups',
-                id: 'Task 4',
-                progress: random(40, 70),
-                dependencies: 'Task 3',
-            },
-            {
-                start: daysSince(6),
-                duration: '5d',
-                name: 'Frontend development',
-                id: 'Task 5',
-                progress: random(20, 40),
-                dependencies: 'Task 4',
-                important: true,
-            },
-            {
-                start: daysSince(6),
-                duration: '5d',
-                name: 'Backend API development',
-                id: 'Task 6',
-                progress: random(20, 40),
-                dependencies: 'Task 4',
-            },
-            {
-                start: daysSince(12),
-                duration: '3d',
-                name: 'Content writing & upload',
-                id: 'Task 7',
-                progress: random(10, 30),
-                dependencies: 'Task 5',
-            },
-            {
-                start: daysSince(12),
-                duration: '3d',
-                name: 'Cross-browser testing',
-                id: 'Task 8',
-                progress: random(0, 20),
-                dependencies: 'Task 5, Task 6',
-            },
-            {
-                start: daysSince(15),
-                duration: '2d',
-                name: 'Accessibility & performance audit',
-                id: 'Task 9',
-                progress: random(0, 10),
-                dependencies: 'Task 8',
-            },
-            {
-                start: daysSince(17),
-                duration: '2d',
-                name: 'Client demo & feedback',
-                id: 'Task 10',
-                progress: 0,
-                dependencies: 'Task 9, Task 7',
-            },
-            {
-                start: daysSince(19),
-                duration: '2d',
-                name: 'Apply feedback & final polish',
-                id: 'Task 11',
-                progress: 0,
-                dependencies: 'Task 10',
-            },
-            {
-                start: daysSince(21),
-                duration: '1d',
-                name: 'SEO optimization',
-                id: 'Task 12',
-                progress: 0,
-                dependencies: 'Task 11',
-            },
-            {
-                start: daysSince(22),
-                duration: '1d',
-                name: 'Create documentation',
-                id: 'Task 13',
-                progress: 0,
-                dependencies: 'Task 11',
-            },
-            {
-                start: daysSince(23),
-                duration: '1d',
-                name: 'Team training session',
-                id: 'Task 14',
-                progress: 0,
-                dependencies: 'Task 13',
-            },
-            {
-                start: daysSince(24),
-                duration: '2d',
-                name: 'Final deployment to production',
-                id: 'Task 15',
-                progress: 0,
-                dependencies: 'Task 12, Task 14',
-                important: true,
-            },
-            {
-                start: daysSince(26),
-                duration: '3d',
-                name: 'Post-launch monitoring & analytics',
-                id: 'Task 16',
-                progress: 0,
-                dependencies: 'Task 15',
+            function random(begin = 10, end = 90, multiple = 10) {
+                let k;
+                do {
+                    k = Math.floor(Math.random() * 100);
+                } while (k < begin || k > end || k % multiple !== 0);
+                return k;
             }
-        ];
 
-        const mutablity = new Gantt('#mutability', tasks, {
-            label_button: true,
-            expected_line_button: true,
-            label_filter: true,
-            view_mode_select: true,
-            popup_on: 'hover',
-            labels: [
-                {
-                    'Status': [
-                        'Not Started', 'In Progress', 'Completed', 'Blocked', 'On Hold',
-                        'Pending Review', 'Awaiting Feedback', 'Deferred', 'Cancelled',
-                        'Ready for Testing', 'In Testing', 'Testing Passed', 'Testing Failed',
-                        'Reopened', 'Verified', 'Closed', 'Duplicate'
-                    ],
-                    'Priority': [
-                        'Critical', 'High', 'Medium', 'Low', 'None',
-                        'Urgent', 'Immediate', 'Normal', 'Deferred',
-                        'Trivial', 'Blocker', 'Major', 'Minor',
-                        'Showstopper', 'Essential', 'Optional', 'Future'
-                    ],
-                    'Department': [
-                        'Engineering', 'Marketing', 'Sales', 'Support', 'HR',
-                        'Finance', 'Legal', 'Operations', 'IT',
-                        'Design', 'Product', 'QA', 'Security',
-                        'Admin', 'Training', 'Logistics', 'Procurement'
-                    ],
-                    'Owner': [
-                        'Alice', 'Bob', 'Charlie', 'Diana', 'Ethan',
-                        'Fiona', 'George', 'Hannah', 'Ian',
-                        'Julia', 'Kevin', 'Laura', 'Michael',
-                        'Nina', 'Oscar', 'Paula', 'Quentin'
-                    ],
-                    'Risk Level': [
-                        'Very High', 'High', 'Moderate', 'Low', 'Very Low',
-                        'None', 'Negligible', 'Minor', 'Major',
-                        'Severe', 'Elevated', 'Extreme', 'Minimal',
-                        'Tolerable', 'Unacceptable', 'Acceptable', 'Catastrophic'
-                    ],
-                    'Phase': [
-                        'Initiation', 'Planning', 'Execution', 'Monitoring', 'Closure',
-                        'Requirement Gathering', 'Design', 'Development', 'Testing',
-                        'Deployment', 'Review', 'Approval', 'Kickoff',
-                        'Sprint 1', 'Sprint 2', 'Sprint 3', 'Finalization'
-                    ]
-                }
-            ]
+            const daysSince = (dx) => new Date(today + dx * 86400000);
+            let tasks = [
+                // your tasks here...
+            ];
 
+            const mutablity = new Gantt('#mutability', tasks, {
+                label_button: true,
+                expected_line_button: true,
+                label_filter: true,
+                view_mode_select: true,
+                popup_on: 'hover',
+                labels: [
+                    {
+                        'Status': [
+                            'Not Started', 'In Progress', 'Completed', 'Blocked', 'On Hold',
+                            'Pending Review', 'Awaiting Feedback', 'Deferred', 'Cancelled',
+                            'Ready for Testing', 'In Testing', 'Testing Passed', 'Testing Failed',
+                            'Reopened', 'Verified', 'Closed', 'Duplicate'
+                        ],
+                        'Priority': [
+                            'Critical', 'High', 'Medium', 'Low', 'None',
+                            'Urgent', 'Immediate', 'Normal', 'Deferred',
+                            'Trivial', 'Blocker', 'Major', 'Minor',
+                            'Showstopper', 'Essential', 'Optional', 'Future'
+                        ],
+                        'Department': [
+                            'Engineering', 'Marketing', 'Sales', 'Support', 'HR',
+                            'Finance', 'Legal', 'Operations', 'IT',
+                            'Design', 'Product', 'QA', 'Security',
+                            'Admin', 'Training', 'Logistics', 'Procurement'
+                        ],
+                        'Owner': [
+                            'Alice', 'Bob', 'Charlie', 'Diana', 'Ethan',
+                            'Fiona', 'George', 'Hannah', 'Ian',
+                            'Julia', 'Kevin', 'Laura', 'Michael',
+                            'Nina', 'Oscar', 'Paula', 'Quentin'
+                        ],
+                        'Risk Level': [
+                            'Very High', 'High', 'Moderate', 'Low', 'Very Low',
+                            'None', 'Negligible', 'Minor', 'Major',
+                            'Severe', 'Elevated', 'Extreme', 'Minimal',
+                            'Tolerable', 'Unacceptable', 'Acceptable', 'Catastrophic'
+                        ],
+                        'Phase': [
+                            'Initiation', 'Planning', 'Execution', 'Monitoring', 'Closure',
+                            'Requirement Gathering', 'Design', 'Development', 'Testing',
+                            'Deployment', 'Review', 'Approval', 'Kickoff',
+                            'Sprint 1', 'Sprint 2', 'Sprint 3', 'Finalization'
+                        ]
+                    }
+                ]
+            });
         });
-
     </script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-        crossorigin="anonymous"></script>
+        crossorigin="anonymous" defer></script>
 </body>
 
 </html>
