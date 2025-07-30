@@ -1,10 +1,22 @@
 import date_utils from './date_utils';
 
+/**
+ * Get the decade string for a given date
+ * @param {Date} d - Date object
+ * @returns {string} Decade string
+ */
 function getDecade(d) {
     const year = d.getFullYear();
     return year - (year % 10) + '';
 }
 
+/**
+ * Format a week range string
+ * @param {Date} d - Current date
+ * @param {Date} ld - Last date
+ * @param {string} lang - Language code
+ * @returns {string} Formatted week range string
+ */
 function formatWeek(d, ld, lang) {
     let endOfWeek = date_utils.add(d, 6, 'day');
     let endFormat = endOfWeek.getMonth() !== d.getMonth() ? 'D MMM' : 'D';
@@ -12,6 +24,10 @@ function formatWeek(d, ld, lang) {
     return `${date_utils.format(d, beginFormat, lang)} - ${date_utils.format(endOfWeek, endFormat, lang)}`;
 }
 
+/**
+ * Default view mode configurations for the Gantt chart
+ * @type {import('./index.js').ViewMode[]}
+ */
 const DEFAULT_VIEW_MODES = [
     {
         name: 'Hour',
@@ -107,6 +123,10 @@ const DEFAULT_VIEW_MODES = [
     },
 ];
 
+/**
+ * Default configuration options for the Gantt chart
+ * @type {import('./index.js').GanttOptions}
+ */
 const DEFAULT_OPTIONS = {
     arrow_curve: 5,
     auto_move_label: false,

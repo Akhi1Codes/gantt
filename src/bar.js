@@ -1,7 +1,16 @@
 import date_utils from './date_utils';
 import { $, createSVG, animateSVG } from './svg_utils';
 
+/**
+ * Represents a task bar in the Gantt chart
+ * @class
+ */
 export default class Bar {
+    /**
+     * Create a new Bar instance
+     * @param {import('./index.js').default} gantt - The parent Gantt chart instance
+     * @param {import('./index.js').Task} task - The task data object
+     */
     constructor(gantt, task) {
         this.set_defaults(gantt, task);
         this.prepare_wrappers();
@@ -9,6 +18,9 @@ export default class Bar {
         this.refresh();
     }
 
+    /**
+     * Refresh the bar display with current task data
+     */
     refresh() {
         this.bar_group.innerHTML = '';
         this.handle_group.innerHTML = '';
@@ -422,6 +434,12 @@ export default class Bar {
         });
     }
 
+    /**
+     * Update the position and/or width of the task bar
+     * @param {Object} params - Position parameters
+     * @param {number} [params.x] - New x position
+     * @param {number} [params.width] - New width
+     */
     update_bar_position({ x = null, width = null }) {
         const bar = this.$bar;
 

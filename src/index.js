@@ -11,6 +11,81 @@ import { DEFAULT_OPTIONS, DEFAULT_VIEW_MODES } from './defaults';
 
 import './styles/gantt.css';
 
+/**
+ * @typedef {Object} Task
+ * @property {string} id - Unique identifier for the task
+ * @property {string} name - Display name of the task
+ * @property {string|Date} start - Start date of the task
+ * @property {string|Date} [end] - End date of the task
+ * @property {string} [duration] - Duration string (e.g., "3d", "1w") - alternative to end date
+ * @property {number} [progress] - Progress percentage (0-100)
+ * @property {string[]} [dependencies] - Array of task IDs this task depends on
+ * @property {string} [custom_class] - Custom CSS class for styling
+ * @property {string} [description] - Task description shown in popup
+ * @property {string|Date} [expected_start] - Expected start date for comparison
+ * @property {string|Date} [expected_end] - Expected end date for comparison
+ */
+
+/**
+ * @typedef {Object} ViewMode
+ * @property {string} name - Name of the view mode
+ * @property {string} padding - Padding around the gantt chart
+ * @property {string} step - Time step for each column
+ * @property {string} [date_format] - Date format string
+ * @property {number} [column_width] - Width of each column in pixels
+ * @property {string|Function} [lower_text] - Lower header text format or function
+ * @property {string|Function} [upper_text] - Upper header text format or function
+ * @property {Function} [thick_line] - Function to determine thick lines
+ * @property {string} [snap_at] - Snap granularity for dragging
+ */
+
+/**
+ * @typedef {Object} GanttOptions
+ * @property {number} [arrow_curve] - Curve amount for dependency arrows
+ * @property {boolean} [auto_move_label] - Auto move labels on scroll
+ * @property {number} [bar_corner_radius] - Corner radius for task bars
+ * @property {number} [bar_height] - Height of task bars in pixels
+ * @property {number|string} [container_height] - Height of container or 'auto'
+ * @property {number} [column_width] - Width of time columns
+ * @property {string} [date_format] - Default date format
+ * @property {number} [upper_header_height] - Height of upper header
+ * @property {number} [lower_header_height] - Height of lower header
+ * @property {string} [snap_at] - Snap granularity for dragging
+ * @property {boolean} [infinite_padding] - Enable infinite scrolling
+ * @property {Object} [holidays] - Holiday highlighting configuration
+ * @property {string[]|Function} [ignore] - Dates to ignore/exclude
+ * @property {string} [language] - Language for date formatting
+ * @property {string} [lines] - Grid lines: 'both', 'vertical', 'horizontal', 'none'
+ * @property {boolean} [move_dependencies] - Move dependent tasks when dragging
+ * @property {number} [padding] - Padding between task bars
+ * @property {Function|boolean} [popup] - Popup configuration function or false to disable
+ * @property {string} [popup_on] - When to show popup: 'click' or 'hover'
+ * @property {boolean} [readonly_progress] - Disable progress editing
+ * @property {boolean} [readonly_dates] - Disable date editing
+ * @property {boolean} [readonly] - Make entire chart read-only
+ * @property {string|Date} [scroll_to] - Initial scroll position
+ * @property {boolean} [show_expected_progress] - Show expected progress indicators
+ * @property {boolean} [expected_date_line] - Show expected date lines
+ * @property {boolean} [today_button] - Show today navigation button
+ * @property {boolean} [label_button] - Show label toggle button
+ * @property {boolean} [label_filter] - Enable label filtering
+ * @property {boolean} [expected_line_button] - Show expected lines toggle
+ * @property {string} [view_mode] - Default view mode name
+ * @property {boolean} [view_mode_select] - Show view mode selector
+ * @property {ViewMode[]} [view_modes] - Available view modes
+ * @property {Function} [on_click] - Click event handler
+ * @property {Function} [on_date_change] - Date change event handler
+ * @property {Function} [on_progress_change] - Progress change event handler
+ * @property {Function} [on_view_change] - View mode change event handler
+ * @property {Object} [labels] - Label configuration
+ */
+
+/**
+ * Throttle function to limit function execution frequency
+ * @param {Function} fn - Function to throttle
+ * @param {number} wait - Wait time in milliseconds
+ * @returns {Function} Throttled function
+ */
 function throttle(fn, wait) {
     let lastTime = 0;
     let timeout;
@@ -32,7 +107,17 @@ function throttle(fn, wait) {
     };
 }
 
+/**
+ * Main Gantt chart class for creating interactive project timelines
+ * @class
+ */
 export default class Gantt {
+    /**
+     * Create a new Gantt chart instance
+     * @param {string|HTMLElement|SVGElement} wrapper - CSS selector string, HTML element, or SVG element to render the chart
+     * @param {Task[]} tasks - Array of task objects
+     * @param {GanttOptions} [options] - Chart configuration options
+     */
     constructor(wrapper, tasks, options) {
         this.setup_wrapper(wrapper);
         this.setup_options(options);
@@ -136,6 +221,10 @@ export default class Gantt {
         }
     }
 
+    /**
+     * Update chart options and re-render
+     * @param {Partial<GanttOptions>} options - New options to merge with existing options
+     */
     update_options(options) {
         this.setup_options({ ...this.original_options, ...options });
         this.change_view_mode(undefined, true);
@@ -233,11 +322,20 @@ export default class Gantt {
         }
     }
 
+    /**
+     * Refresh the chart with new tasks
+     * @param {Task[]} tasks - Array of new task objects
+     */
     refresh(tasks) {
         this.setup_tasks(tasks);
         this.change_view_mode();
     }
 
+    /**
+     * Update an existing task with new details
+     * @param {string} id - Task ID to update
+     * @param {Partial<Task>} new_details - New task properties to merge
+     */
     update_task(id, new_details) {
         let task = this.tasks.find((t) => t.id === id);
         let bar = this.bars[task._index];
@@ -245,6 +343,11 @@ export default class Gantt {
         bar.refresh();
     }
 
+    /**
+     * Change the view mode of the gantt chart
+     * @param {string|ViewMode} [mode] - View mode name or view mode object
+     * @param {boolean} [maintain_pos=false] - Whether to maintain scroll position
+     */
     change_view_mode(mode = this.options.view_mode, maintain_pos = false) {
         if (typeof mode === 'string') {
             mode = this.options.view_modes.find((d) => d.name === mode);
@@ -1656,6 +1759,10 @@ export default class Gantt {
         });
     }
 
+    /**
+     * Show popup for a task
+     * @param {Object} opts - Popup options including task and position
+     */
     show_popup(opts) {
         if (this.options.popup === false) return;
         if (!this.popup) {
@@ -1680,9 +1787,7 @@ export default class Gantt {
 
     /**
      * Gets the oldest starting date from the list of tasks
-     *
-     * @returns Date
-     * @memberof Gantt
+     * @returns {Date} The oldest starting date
      */
     get_oldest_starting_date() {
         if (!this.tasks.length) return new Date();
@@ -1695,8 +1800,6 @@ export default class Gantt {
 
     /**
      * Clear all elements from the parent svg element
-     *
-     * @memberof Gantt
      */
     clear() {
         this.$svg.innerHTML = '';
@@ -1752,6 +1855,11 @@ export default class Gantt {
     }
 }
 
+/**
+ * Static view mode constants
+ * @static
+ * @readonly
+ */
 Gantt.VIEW_MODE = {
     HOUR: DEFAULT_VIEW_MODES[0],
     QUARTER_DAY: DEFAULT_VIEW_MODES[1],

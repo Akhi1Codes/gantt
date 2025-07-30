@@ -6,7 +6,16 @@ const MINUTE = 'minute';
 const SECOND = 'second';
 const MILLISECOND = 'millisecond';
 
+/**
+ * Date utility functions for the Gantt chart
+ * @namespace
+ */
 export default {
+    /**
+     * Parse a duration string into duration and scale components
+     * @param {string} duration - Duration string like "3d", "1w", "2h"
+     * @returns {{duration: number, scale: string}} Object with duration number and scale string
+     */
     parse_duration(duration) {
         const regex = /([0-9]+)(y|m|d|h|min|s|ms)/gm;
         const matches = regex.exec(duration);
@@ -28,6 +37,13 @@ export default {
             }
         }
     },
+    /**
+     * Parse a date string or Date object into a Date object
+     * @param {string|Date} date - Date string or Date object to parse
+     * @param {string} [date_separator='-'] - Date separator character
+     * @param {RegExp|string} [time_separator=/[.:]/] - Time separator pattern
+     * @returns {Date} Parsed Date object
+     */
     parse(date, date_separator = '-', time_separator = /[.:]/) {
         if (date instanceof Date) {
             return date;
@@ -90,6 +106,13 @@ export default {
         return date_string + (with_time ? ' ' + time_string : '');
     },
 
+    /**
+     * Format a date according to the specified format string
+     * @param {Date} date - Date to format
+     * @param {string} [date_format='YYYY-MM-DD HH:mm'] - Format string (e.g., 'YYYY-MM-DD', 'MMM D')
+     * @param {string} [lang='en'] - Language code for localization
+     * @returns {string} Formatted date string
+     */
     format(date, date_format = 'YYYY-MM-DD HH:mm', lang = 'en') {
         if (typeof date_format !== 'string') {
             console.warn(
