@@ -1175,7 +1175,25 @@ export default class Gantt {
 
     get_closest_date() {
         let now = new Date();
-        if (now < this.gantt_start || now > this.gantt_end) return null;
+        
+        if (now < this.gantt_start || now > this.gantt_end) {
+            let gridExtended = false;
+            if (now < this.gantt_start) {
+                this.gantt_start = date_utils.add(now, -7, 'day');
+                gridExtended = true;
+            }
+            
+            if (now > this.gantt_end) {
+                this.gantt_end = date_utils.add(now, 7, 'day');
+                gridExtended = true;
+            }
+            
+            if (gridExtended) {
+                this.setup_date_values();
+                this._preserveLabelState = true;
+                this.render();
+            }
+        }
 
         let current = new Date(),
             el = this.$container.querySelector(
