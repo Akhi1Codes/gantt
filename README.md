@@ -3,6 +3,8 @@
 
 ![Hero Image](.github/hero-image.png)
 
+🔗 [Live Demo](https://akhi1codes.github.io/gantt/)
+
 [![](https://data.jsdelivr.com/v1/package/npm/ganttflow/badge?style=rounded)](https://www.jsdelivr.com/package/npm/ganttflow)
 
 ## Advanced Gantt Chart
