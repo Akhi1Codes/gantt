@@ -586,6 +586,18 @@ export default class Gantt {
                 this.label.show();
             }
         }
+
+        if (this.options.expected_line_button) {
+            this.$expected_line_button = this.create_el({
+                classes: 'expected-line-button',
+                type: 'button',
+                append_to: this.$side_header,
+            });
+            this.$expected_line_button.textContent = 'Expected';
+            this.$expected_line_button.onclick = this.toggle_expected_lines.bind(this);
+            this.$side_header.prepend(this.$expected_line_button);
+        }
+
         this.theme = new Theme(this);
     }
 
@@ -1706,6 +1718,29 @@ export default class Gantt {
     toggle_label_field() {
         this.init_label();
         this.label.toggle();
+    }
+
+    toggle_expected_lines() {
+        // Toggle the expected_date_line option
+        this.options.expected_date_line = !this.options.expected_date_line;
+        
+        // Re-render all bars to show/hide expected lines
+        this.bars.forEach(bar => {
+            // Remove existing expected line if it exists
+            if (bar.$expected_line) {
+                bar.$expected_line.remove();
+                bar.$expected_line = null;
+            }
+            
+            // Draw expected line if option is enabled and task has expected dates
+            if (
+                bar.task.expected_start &&
+                bar.task.expected_end &&
+                this.options.expected_date_line
+            ) {
+                bar.draw_expected_line();
+            }
+        });
     }
 
     init_label(labels) {

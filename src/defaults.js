@@ -155,6 +155,7 @@ const DEFAULT_OPTIONS = {
     today_button: true,
     label_button: false,
     label_filter: false,
+    expected_line_button: false,
     view_mode: 'Day',
     view_mode_select: false,
     view_modes: DEFAULT_VIEW_MODES,

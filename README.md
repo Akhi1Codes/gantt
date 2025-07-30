@@ -74,6 +74,7 @@ The Enhanced Gantt Chart offers a wide range of options to customize your chart.
 | `scroll_to`              | Determines the starting point when chart is rendered.                                           | `today`, `start`, `end`, or a date string.  | `today`                          |
 | `show_expected_progress` | Shows expected progress for tasks.                                              | `true`, `false`                                    | `false`                            |
 | `expected_date_line`     | Shows a vertical line indicating expected completion date.                      | `true`, `false`                                    | `false`                            |
+| `expected_line_button`   | Adds a button to toggle expected date lines on/off.                           | `true`, `false`                                    | `false`                            |
 | `today_button`           | Adds a button to navigate to today's date.                                      | `true`, `false`                                    | `true`                             |
 | `label_button`           | Adds a button to toggle the label panel visibility.                            | `true`, `false`                                    | `false`                            |
 | `label_filter`           | Enables filtering/selection of label columns in the label panel.               | `true`, `false`                                    | `false`                            |
@@ -137,6 +138,20 @@ Their values (from each task) show up aligned with that column
 **Label Options:**
 - `label_button`: Set to `true` to enable the label panel with a toggle button
 - `label_filter`: Set to `true` to enable column filtering (allows users to show/hide up to 3 columns at a time via a dropdown)
+
+#### Expected Line Button
+The expected line button allows users to toggle the display of expected completion lines for tasks. When enabled, tasks that have `expected_start` and `expected_end` dates will show a horizontal line below the task bar indicating the expected timeline.
+
+To enable the expected line button:
+
+```js
+let gantt = new Gantt("#gantt", tasks, {
+    expected_line_button: true,
+    expected_date_line: false, // Initial state (optional)
+});
+```
+
+The button displays "Expected" and allows users to toggle the expected lines on and off for all tasks.
 
 **Label Features:**
 - **Resizable Panel**: Users can drag the panel border to resize the label column width
