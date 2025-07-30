@@ -182,8 +182,8 @@ If you want to contribute enhancements or fixes:
 
 1. Clone this repo.
 2. `cd` into project directory.
-3. Run `pnpm i` to install dependencies.
-4. `pnpm run build` to build files - or `pnpm run build-dev` to build and watch for changes.
+3. Run `npm i` to install dependencies.
+4. `npm run build` to build files - or `npm run build-dev` to build and watch for changes.
 5. Open `index.html` in your browser.
 6. Make your code changes and test them.
 
