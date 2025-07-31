@@ -1113,8 +1113,6 @@ export default class Gantt {
             date = date_utils.parse(date);
         }
 
-        // Weird bug where infinite padding results in one day offset in scroll
-        // Related to header-body displacement
         const units_since_first_task = date_utils.diff(
             date,
             this.gantt_start,
@@ -1124,11 +1122,20 @@ export default class Gantt {
             (units_since_first_task / this.config.step) *
             this.config.column_width;
 
+        // For infinite padding, adjust scroll position to account for dynamic grid extension
+        let target_scroll_left = scroll_pos -
+            this.$container.clientWidth / 2 +
+            this.config.column_width / 2;
+
+        // Ensure we don't scroll beyond the current grid boundaries when infinite padding is enabled
+        if (this.options.infinite_padding) {
+            let [min_start, max_start, max_end] = this.get_start_end_positions();
+            target_scroll_left = Math.max(min_start - this.$container.clientWidth, 
+                                         Math.min(max_end, target_scroll_left));
+        }
+
         this.$container.scrollTo({
-            left:
-                scroll_pos -
-                this.$container.clientWidth / 2 +
-                this.config.column_width / 2,
+            left: target_scroll_left,
             behavior: 'smooth',
         });
 
@@ -1154,8 +1161,8 @@ export default class Gantt {
 
         this.current_date = date_utils.add(
             this.gantt_start,
-            (this.$container.scrollLeft + $el.clientWidth) /
-                this.config.column_width,
+            ((this.$container.scrollLeft + $el.clientWidth) /
+                this.config.column_width) * this.config.step,
             this.config.unit,
         );
         current_upper = this.config.view_mode.upper_text(
@@ -1170,7 +1177,33 @@ export default class Gantt {
 
     scroll_current() {
         let res = this.get_closest_date();
-        if (res) this.set_scroll_position(res[0]);
+        if (res) {
+            // For infinite padding, use a more precise scroll calculation for today
+            if (this.options.infinite_padding) {
+                const today_date = res[0];
+                const units_since_start = date_utils.diff(
+                    today_date,
+                    this.gantt_start,
+                    this.config.unit,
+                );
+                const scroll_pos = (units_since_start / this.config.step) * this.config.column_width;
+                
+                // Center the today date in the viewport
+                const target_scroll_left = scroll_pos - this.$container.clientWidth / 2 + this.config.column_width / 2;
+                
+                this.$container.scrollTo({
+                    left: target_scroll_left,
+                    behavior: 'smooth',
+                });
+                
+                // Update current date display after scrolling
+                setTimeout(() => {
+                    this.update_current_date_display();
+                }, 100);
+            } else {
+                this.set_scroll_position(res[0]);
+            }
+        }
     }
 
     get_closest_date() {
@@ -1228,6 +1261,35 @@ export default class Gantt {
             ),
             el,
         ];
+    }
+
+    update_current_date_display() {
+        // Update the current date based on the current scroll position
+        this.current_date = date_utils.add(
+            this.gantt_start,
+            (this.$container.scrollLeft / this.config.column_width) *
+                this.config.step,
+            this.config.unit,
+        );
+
+        // Update the current upper text display
+        if (this.$current) {
+            this.$current.classList.remove('current-upper');
+        }
+
+        let current_upper = this.config.view_mode.upper_text(
+            this.current_date,
+            null,
+            this.options.language,
+        );
+        let $el = this.upperTexts.find(
+            (el) => el.textContent === current_upper,
+        );
+
+        if ($el) {
+            $el.classList.add('current-upper');
+            this.$current = $el;
+        }
     }
 
     bind_grid_click() {
@@ -1406,7 +1468,12 @@ export default class Gantt {
                         if (Math.abs(bar_position_change) > 0) {
                             container.scrollLeft += bar_position_change;
                         }
-                        setTimeout(() => (extended = false), 300);
+                        
+                        // Update current date display after grid extension to maintain alignment
+                        setTimeout(() => {
+                            this.update_current_date_display();
+                            extended = false;
+                        }, 300);
                     }
 
                     if (!extended && atBottom && scrollingDown) {
@@ -1444,7 +1511,12 @@ export default class Gantt {
                         if (Math.abs(bar_position_change) > 0) {
                             container.scrollLeft += bar_position_change;
                         }
-                        setTimeout(() => (extended = false), 300);
+                        
+                        // Update current date display after grid extension to maintain alignment
+                        setTimeout(() => {
+                            this.update_current_date_display();
+                            extended = false;
+                        }, 300);
                     }
                 }, 100),
             );
@@ -1460,10 +1532,11 @@ export default class Gantt {
                 dx = e.currentTarget.scrollLeft - x_on_scroll_start;
             }
 
+            // More stable current_date calculation to prevent alignment issues
+            const scrollLeft = e.currentTarget.scrollLeft;
             this.current_date = date_utils.add(
                 this.gantt_start,
-                (e.currentTarget.scrollLeft / this.config.column_width) *
-                    this.config.step,
+                (scrollLeft / this.config.column_width) * this.config.step,
                 this.config.unit,
             );
 
@@ -1476,23 +1549,27 @@ export default class Gantt {
                 (el) => el.textContent === current_upper,
             );
 
-            this.current_date = date_utils.add(
-                this.gantt_start,
-                ((e.currentTarget.scrollLeft + $el.clientWidth) /
-                    this.config.column_width) *
-                    this.config.step,
-                this.config.unit,
-            );
-            current_upper = this.config.view_mode.upper_text(
-                this.current_date,
-                null,
-                this.options.language,
-            );
-            $el = this.upperTexts.find(
-                (el) => el.textContent === current_upper,
-            );
+            // Only update if we found a valid element to avoid misalignment
+            if ($el) {
+                // Recalculate with element width for precision, but only if element exists
+                this.current_date = date_utils.add(
+                    this.gantt_start,
+                    ((scrollLeft + $el.clientWidth) / this.config.column_width) * this.config.step,
+                    this.config.unit,
+                );
+                
+                current_upper = this.config.view_mode.upper_text(
+                    this.current_date,
+                    null,
+                    this.options.language,
+                );
+                $el = this.upperTexts.find(
+                    (el) => el.textContent === current_upper,
+                );
+            }
 
-            if ($el !== this.$current) {
+            // Update current element highlighting with null check
+            if ($el && $el !== this.$current) {
                 if (this.$current)
                     this.$current.classList.remove('current-upper');
 
@@ -1500,7 +1577,7 @@ export default class Gantt {
                 this.$current = $el;
             }
 
-            x_on_scroll_start = e.currentTarget.scrollLeft;
+            x_on_scroll_start = scrollLeft;
             let [min_start, max_start, max_end] =
                 this.get_start_end_positions();
 
