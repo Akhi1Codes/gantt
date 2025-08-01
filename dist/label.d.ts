@@ -1,0 +1,50 @@
+export default class Label {
+    constructor(gantt: any, labels: any);
+    gantt: any;
+    labels: any[];
+    isVisible: boolean;
+    setup_labels(): void;
+    labelHeaders: any[];
+    labelColumns: any[];
+    create_label_field(): void;
+    $label_field: HTMLDivElement;
+    create_upper_header(): void;
+    _clickOutsideHandler: (e: any) => void;
+    visibleHeaders: Set<any>;
+    create_settings_dropdown($parent: any): void;
+    $settings_dropdown: HTMLDivElement;
+    _headerCheckboxes: any[];
+    toggle_settings_dropdown(): void;
+    show_settings_dropdown(): void;
+    hide_settings_dropdown(): void;
+    toggle_header_visibility(header: any, isVisible: any): void;
+    refresh_label_display(): void;
+    $labels_scroll: HTMLDivElement;
+    create_headers_row(): void;
+    create_values_area(): void;
+    setup_scroll_sync(): void;
+    create_resize_handle(): void;
+    $resize_handle: HTMLDivElement;
+    setup_resize_functionality(): void;
+    _windowResizeHandler: () => void;
+    save_state(): {
+        isVisible: boolean;
+        visibleHeaders: Set<any>;
+        labels: any[];
+        labelWidth: string;
+    };
+    restore_state(state: any): void;
+    toggle(): void;
+    show(): void;
+    hide(): void;
+    remove(): void;
+    update_labels(labels: any): void;
+    get_width(): number;
+    set_width(width: any): void;
+    update_column_layout(): void;
+    _enforce_max_three_headers(): void;
+    /**
+     * Sync labels with current task state after grouping changes
+     */
+    sync_with_tasks(): void;
+}

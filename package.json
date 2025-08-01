@@ -20,7 +20,6 @@
         "url": "git+https://github.com/Akhi1Codes/gantt.git"
     },
     "files": [
-        "src",
         "dist",
         "README.md"
     ],
