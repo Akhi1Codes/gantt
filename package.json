@@ -2,7 +2,8 @@
     "name": "ganttflow",
     "version": "1.0.9",
     "description": "A lightweight, modern, and interactive Gantt chart library for building project timelines on the web.",
-    "main": "src/index.js",
+    "main": "dist/gantt.umd.js",
+    "module": "dist/gantt.es.js",
     "types": "dist/index.d.ts",
     "type": "module",
     "scripts": {

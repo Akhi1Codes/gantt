@@ -6,7 +6,11 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, 'src/index.js'),
       name: 'Gantt',
-      fileName: (format) => `gantt.${format}.js`,
+      formats: ['es', 'umd', 'cjs'],
+      fileName: (format) => {
+        if (format === 'cjs') return 'index.js';
+        return `gantt.${format}.js`;
+      },
     },
     rollupOptions: {
       output: {
