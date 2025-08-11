@@ -43,8 +43,4 @@ export default class Label {
     set_width(width: any): void;
     update_column_layout(): void;
     _enforce_max_three_headers(): void;
-    /**
-     * Sync labels with current task state after grouping changes
-     */
-    sync_with_tasks(): void;
 }

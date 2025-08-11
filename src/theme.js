@@ -20,27 +20,25 @@ export default class Theme {
     }
 
     toggle_theme() {
-        const themes = ['auto', 'light', 'dark'];
-        const currentIndex = themes.indexOf(this.current_theme);
-        const nextIndex = (currentIndex + 1) % themes.length;
-        this.current_theme = themes[nextIndex];
+        if (this.current_theme === 'auto') {
+            this.current_theme = 'light';
+        } else {
+            this.current_theme =
+                this.current_theme === 'light' ? 'dark' : 'light';
+        }
 
         localStorage.setItem('gantt-theme', this.current_theme);
         this.apply_theme(this.current_theme);
     }
 
     apply_theme(theme) {
-        // Remove existing theme classes
         this.gantt.$main_container.classList.remove(
             'theme-light',
             'theme-dark',
             'theme-auto',
         );
 
-        // Apply the new theme class
         this.gantt.$main_container.classList.add(`theme-${theme}`);
-
-        // Update button icon and title
         this.update_theme_button(theme);
     }
 
@@ -69,7 +67,7 @@ export default class Theme {
         const titles = {
             auto: 'Theme: Auto (click for Light)',
             light: 'Theme: Light (click for Dark)',
-            dark: 'Theme: Dark (click for Auto)',
+            dark: 'Theme: Dark (click for Light)',
         };
 
         this.$theme_icon.innerHTML = icons[theme];

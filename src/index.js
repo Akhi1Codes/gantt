@@ -553,21 +553,23 @@ export default class Gantt {
 
     make_grid_background() {
         const grid_width = this.dates.length * this.config.column_width;
-        
+
         // Calculate the minimum height needed for tasks
-        const task_based_height = this.config.header_height +
+        const task_based_height =
+            this.config.header_height +
             this.options.padding +
             (this.options.bar_height + this.options.padding) *
                 this.tasks.length -
             10;
-        
+
         let container_height_fallback = 0;
         if (this.options.container_height === 'auto') {
             // Get the actual container height when auto is set
             const containerRect = this.$container.getBoundingClientRect();
-            container_height_fallback = containerRect.height > 0 ? containerRect.height : 0;
+            container_height_fallback =
+                containerRect.height > 0 ? containerRect.height : 0;
         }
-        
+
         const grid_height = Math.max(
             task_based_height,
             this.options.container_height !== 'auto'
@@ -697,7 +699,8 @@ export default class Gantt {
                 append_to: this.$side_header,
             });
             this.$expected_line_button.textContent = 'Expected';
-            this.$expected_line_button.onclick = this.toggle_expected_lines.bind(this);
+            this.$expected_line_button.onclick =
+                this.toggle_expected_lines.bind(this);
             this.$side_header.prepend(this.$expected_line_button);
         }
 
@@ -1123,15 +1126,19 @@ export default class Gantt {
             this.config.column_width;
 
         // For infinite padding, adjust scroll position to account for dynamic grid extension
-        let target_scroll_left = scroll_pos -
+        let target_scroll_left =
+            scroll_pos -
             this.$container.clientWidth / 2 +
             this.config.column_width / 2;
 
         // Ensure we don't scroll beyond the current grid boundaries when infinite padding is enabled
         if (this.options.infinite_padding) {
-            let [min_start, max_start, max_end] = this.get_start_end_positions();
-            target_scroll_left = Math.max(min_start - this.$container.clientWidth, 
-                                         Math.min(max_end, target_scroll_left));
+            let [min_start, max_start, max_end] =
+                this.get_start_end_positions();
+            target_scroll_left = Math.max(
+                min_start - this.$container.clientWidth,
+                Math.min(max_end, target_scroll_left),
+            );
         }
 
         this.$container.scrollTo({
@@ -1162,7 +1169,8 @@ export default class Gantt {
         this.current_date = date_utils.add(
             this.gantt_start,
             ((this.$container.scrollLeft + $el.clientWidth) /
-                this.config.column_width) * this.config.step,
+                this.config.column_width) *
+                this.config.step,
             this.config.unit,
         );
         current_upper = this.config.view_mode.upper_text(
@@ -1186,16 +1194,21 @@ export default class Gantt {
                     this.gantt_start,
                     this.config.unit,
                 );
-                const scroll_pos = (units_since_start / this.config.step) * this.config.column_width;
-                
+                const scroll_pos =
+                    (units_since_start / this.config.step) *
+                    this.config.column_width;
+
                 // Center the today date in the viewport
-                const target_scroll_left = scroll_pos - this.$container.clientWidth / 2 + this.config.column_width / 2;
-                
+                const target_scroll_left =
+                    scroll_pos -
+                    this.$container.clientWidth / 2 +
+                    this.config.column_width / 2;
+
                 this.$container.scrollTo({
                     left: target_scroll_left,
                     behavior: 'smooth',
                 });
-                
+
                 // Update current date display after scrolling
                 setTimeout(() => {
                     this.update_current_date_display();
@@ -1208,19 +1221,19 @@ export default class Gantt {
 
     get_closest_date() {
         let now = new Date();
-        
+
         if (now < this.gantt_start || now > this.gantt_end) {
             let gridExtended = false;
             if (now < this.gantt_start) {
                 this.gantt_start = date_utils.add(now, -7, 'day');
                 gridExtended = true;
             }
-            
+
             if (now > this.gantt_end) {
                 this.gantt_end = date_utils.add(now, 7, 'day');
                 gridExtended = true;
             }
-            
+
             if (gridExtended) {
                 this.setup_date_values();
                 this._preserveLabelState = true;
@@ -1468,7 +1481,7 @@ export default class Gantt {
                         if (Math.abs(bar_position_change) > 0) {
                             container.scrollLeft += bar_position_change;
                         }
-                        
+
                         // Update current date display after grid extension to maintain alignment
                         setTimeout(() => {
                             this.update_current_date_display();
@@ -1511,7 +1524,7 @@ export default class Gantt {
                         if (Math.abs(bar_position_change) > 0) {
                             container.scrollLeft += bar_position_change;
                         }
-                        
+
                         // Update current date display after grid extension to maintain alignment
                         setTimeout(() => {
                             this.update_current_date_display();
@@ -1554,10 +1567,12 @@ export default class Gantt {
                 // Recalculate with element width for precision, but only if element exists
                 this.current_date = date_utils.add(
                     this.gantt_start,
-                    ((scrollLeft + $el.clientWidth) / this.config.column_width) * this.config.step,
+                    ((scrollLeft + $el.clientWidth) /
+                        this.config.column_width) *
+                        this.config.step,
                     this.config.unit,
                 );
-                
+
                 current_upper = this.config.view_mode.upper_text(
                     this.current_date,
                     null,
@@ -1921,15 +1936,15 @@ export default class Gantt {
     toggle_expected_lines() {
         // Toggle the expected_date_line option
         this.options.expected_date_line = !this.options.expected_date_line;
-        
+
         // Re-render all bars to show/hide expected lines
-        this.bars.forEach(bar => {
+        this.bars.forEach((bar) => {
             // Remove existing expected line if it exists
             if (bar.$expected_line) {
                 bar.$expected_line.remove();
                 bar.$expected_line = null;
             }
-            
+
             // Draw expected line if option is enabled and task has expected dates
             if (
                 bar.task.expected_start &&

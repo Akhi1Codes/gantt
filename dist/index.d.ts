@@ -10,8 +10,6 @@ declare class Gantt {
      * @param {GanttOptions} [options] - Chart configuration options
      */
     constructor(wrapper: string | HTMLElement | SVGElement, tasks: Task[], options?: GanttOptions);
-    group_states: Map<any, any>;
-    original_tasks: any[];
     setup_wrapper(element: any): void;
     $main_container: any;
     $container: any;
@@ -31,25 +29,9 @@ declare class Gantt {
      */
     update_options(options: Partial<GanttOptions>): void;
     setup_tasks(tasks: any): void;
-    tasks: any[];
+    tasks: any;
     setup_dependencies(): void;
     dependency_map: {};
-    /**
-     * Detect and organize tasks into parent-child groups
-     */
-    setup_groups(): void;
-    /**
-     * Apply grouping and filtering based on collapsed states
-     */
-    apply_grouping(): any[];
-    /**
-     * Toggle collapse state of a group
-     */
-    toggle_group(groupId: any): void;
-    /**
-     * Update task indices after grouping changes
-     */
-    update_task_indices(): void;
     /**
      * Refresh the chart with new tasks
      * @param {Task[]} tasks - Array of new task objects
@@ -142,7 +124,7 @@ declare class Gantt {
         lower_y: any;
     };
     make_bars(): void;
-    bars: Bar[];
+    bars: any;
     make_arrows(): void;
     arrows: any;
     map_arrows_on_bars(): void;
@@ -165,7 +147,7 @@ declare class Gantt {
     unselect_all(): void;
     view_is(modes: any): boolean;
     get_task(id: any): any;
-    get_bar(id: any): Bar;
+    get_bar(id: any): any;
     /**
      * Show popup for a task
      * @param {Object} opts - Popup options including task and position
@@ -256,14 +238,6 @@ export type Task = {
      * - Expected end date for comparison
      */
     expected_end?: string | Date;
-    /**
-     * - Parent group identifier for grouping
-     */
-    parent?: string;
-    /**
-     * - Child group identifier for grouping
-     */
-    child?: string;
 };
 export type ViewMode = {
     /**
@@ -452,12 +426,7 @@ export type GanttOptions = {
      * - Label configuration
      */
     labels?: any;
-    /**
-     * - Enable task grouping with parent-child relationships
-     */
-    grouping?: boolean;
 };
 import Theme from './theme';
-import Bar from './bar';
 import Popup from './popup';
 import Label from './label';

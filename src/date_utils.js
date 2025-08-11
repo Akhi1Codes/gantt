@@ -68,19 +68,21 @@ export default {
                 }
                 vals = vals.concat(time_parts);
             }
-            
+
             const parsedDate = new Date(...vals);
-            
+
             // Check if the parsed date is valid
             if (isNaN(parsedDate.getTime())) {
                 throw new Error(`Invalid date string: "${date}"`);
             }
-            
+
             return parsedDate;
         }
-        
+
         // Handle invalid input types
-        throw new TypeError(`Invalid date input: expected Date object or string, got ${typeof date}`);
+        throw new TypeError(
+            `Invalid date input: expected Date object or string, got ${typeof date}`,
+        );
     },
 
     to_string(date, with_time = false) {
@@ -169,13 +171,15 @@ export default {
     diff(date_a, date_b, scale = 'day') {
         // Validate inputs
         if (!(date_a instanceof Date) || !(date_b instanceof Date)) {
-            throw new TypeError('Both date_a and date_b must be valid Date objects');
+            throw new TypeError(
+                'Both date_a and date_b must be valid Date objects',
+            );
         }
-        
+
         if (isNaN(date_a.getTime()) || isNaN(date_b.getTime())) {
             throw new TypeError('Both date_a and date_b must be valid dates');
         }
-        
+
         let milliseconds, seconds, hours, minutes, days, months, years;
 
         milliseconds =
